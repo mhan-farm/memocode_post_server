@@ -1,8 +1,7 @@
 package io.mhan.springjpatest2.posts.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import io.mhan.springjpatest2.comments.entity.Comment;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +9,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -31,6 +33,10 @@ public class Post {
 
     private LocalDateTime updated;
 
+    @OneToMany(mappedBy = "post", cascade = PERSIST)
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
+
     public static Post create(String title, String content) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
@@ -44,5 +50,10 @@ public class Post {
                 .build();
 
         return post;
+    }
+
+    public void addComment(Comment comment) {
+        comment.setPost(this);
+        this.comments.add(comment);
     }
 }
