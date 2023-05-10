@@ -86,13 +86,13 @@ public class PostQueryDslRepositoryTest {
     @Test
     @DisplayName("최신순으로 post 조회")
     void t5() {
-        Sort.Order order = Sort.Order.asc("id");
+        Sort.Order order = Sort.Order.desc("created");
 
         Sort sort = Sort.by(order);
 
         List<Post> posts = postRepository.findAll(null, sort);
 
         Collections.reverse(posts);
-        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getId));
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCreated));
     }
 }
