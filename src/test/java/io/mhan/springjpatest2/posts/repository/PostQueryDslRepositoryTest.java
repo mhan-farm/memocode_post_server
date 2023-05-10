@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -73,12 +74,25 @@ public class PostQueryDslRepositoryTest {
     @Test
     @DisplayName("오래된 순으로 post 조회")
     void t4() {
+        Sort.Order order = Sort.Order.asc("created");
+
+        Sort sort = Sort.by(order);
+
+        List<Post> posts = postRepository.findAll(null, sort);
+
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCreated));
+    }
+
+    @Test
+    @DisplayName("최신순으로 post 조회")
+    void t5() {
         Sort.Order order = Sort.Order.asc("id");
 
         Sort sort = Sort.by(order);
 
         List<Post> posts = postRepository.findAll(null, sort);
 
+        Collections.reverse(posts);
         assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getId));
     }
 }

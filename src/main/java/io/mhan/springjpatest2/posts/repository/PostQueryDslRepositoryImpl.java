@@ -51,7 +51,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         Order order = o.getDirection().isAscending() ? Order.ASC : Order.DESC;
 
         Expression<?> expression = switch (o.getProperty()) {
-            case "id" -> post.id;
+            case "created" -> post.created;
             default -> post.created;
         };
         return new OrderSpecifier(order, expression);
