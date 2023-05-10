@@ -3,7 +3,6 @@ package io.mhan.springjpatest2.posts.repository;
 import io.mhan.springjpatest2.base.init.TestService;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.vo.Keyword;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

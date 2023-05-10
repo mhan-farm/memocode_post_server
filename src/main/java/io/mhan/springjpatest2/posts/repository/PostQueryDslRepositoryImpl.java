@@ -1,7 +1,6 @@
 package io.mhan.springjpatest2.posts.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.posts.entity.Post;
