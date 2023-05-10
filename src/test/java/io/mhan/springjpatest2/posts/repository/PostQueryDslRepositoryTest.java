@@ -6,7 +6,9 @@ import io.mhan.springjpatest2.posts.repository.vo.Keyword;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static io.mhan.springjpatest2.posts.repository.vo.KeywordType.TITLE;
@@ -37,7 +39,7 @@ public class PostQueryDslRepositoryTest {
     @Test
     @DisplayName("post 모두 조회")
     void t1() {
-        List<Post> posts = postRepository.findAll(null);
+        List<Post> posts = postRepository.findAll(null, Sort.unsorted());
 
         assertThat(posts.size()).isEqualTo(50);
     }
@@ -50,7 +52,7 @@ public class PostQueryDslRepositoryTest {
                 .value("10")
                 .build();
 
-        List<Post> posts = postRepository.findAll(keyword);
+        List<Post> posts = postRepository.findAll(keyword, Sort.unsorted());
 
         assertThat(posts.size()).isEqualTo(1);
     }
@@ -63,8 +65,20 @@ public class PostQueryDslRepositoryTest {
                 .value("10")
                 .build();
 
-        List<Post> posts = postRepository.findAll(keyword);
+        List<Post> posts = postRepository.findAll(keyword, Sort.unsorted());
 
         assertThat(posts.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("오래된 순으로 post 조회")
+    void t4() {
+        Sort.Order order = Sort.Order.asc("id");
+
+        Sort sort = Sort.by(order);
+
+        List<Post> posts = postRepository.findAll(null, sort);
+
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getId));
     }
 }
