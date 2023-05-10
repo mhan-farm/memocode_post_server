@@ -12,7 +12,7 @@ public class TestService {
 
     public void testData() {
         for (int i=1; i<=50; i++) {
-            Post post = Post.create("title" + i, "content" + i);
+            Post post = Post.create("title" + i, "content" + (i + 1));
             postRepository.save(post);
         }
     }
