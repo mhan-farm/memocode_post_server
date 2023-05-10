@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mariadb://127.0.0.1:3306/post_dev
-    username: lldj
-    password: lldj123414
+    username: testuser
+    password: 5678
   jpa:
     hibernate:
       ddl-auto: create
