@@ -103,7 +103,6 @@ public class PostQueryDslRepositoryTest {
 
         List<Post> posts = postRepository.findAll(null, sort);
 
-        Collections.reverse(posts);
-        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCreated));
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCreated, Comparator.reverseOrder()));
     }
 }
