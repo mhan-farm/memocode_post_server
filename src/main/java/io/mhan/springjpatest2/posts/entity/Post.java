@@ -1,10 +1,8 @@
 package io.mhan.springjpatest2.posts.entity;
 
 import io.mhan.springjpatest2.comments.entity.Comment;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import io.mhan.springjpatest2.users.entity.User;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
@@ -13,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -30,6 +29,9 @@ public class Post {
 
     private String content;
 
+    @ManyToOne(fetch = LAZY)
+    private User author;
+
     private LocalDateTime created;
 
     private LocalDateTime updated;
@@ -40,7 +42,7 @@ public class Post {
 
     private long commentCount;
 
-    public static Post create(String title, String content) {
+    public static Post create(String title, String content, User author) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
         Assert.notNull(content, "title은 null이 될 수 없습니다.");
@@ -48,6 +50,7 @@ public class Post {
         Post post = Post.builder()
                 .title(title)
                 .content(content)
+                .author(author)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();

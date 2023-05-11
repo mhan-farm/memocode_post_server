@@ -50,8 +50,12 @@ public class TestService {
     }
 
     private void createTestPosts(int count) {
+        List<User> users = userRepository.findAll();
+
+        Random random = new Random();
         for (int i=1; i<=count; i++) {
-            Post post = Post.create("title" + i, "content" + (i + 1));
+            User user = users.get(random.nextInt(users.size()));
+            Post post = Post.create("title" + i, "content" + (i + 1), user);
             postRepository.save(post);
         }
     }
