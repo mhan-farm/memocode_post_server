@@ -55,6 +55,9 @@ public class Post {
     private long commentCount;
     private long likeCount;
 
+    @Setter
+    private long views;
+
     public static Post create(String title, String content, User author) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");

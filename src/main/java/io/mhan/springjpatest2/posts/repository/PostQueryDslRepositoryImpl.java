@@ -1,11 +1,11 @@
 package io.mhan.springjpatest2.posts.repository;
 
 import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.mhan.springjpatest2.base.utils.QueryDslUtils;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.vo.Keyword;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
 
@@ -32,7 +33,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
                 .select(post)
                 .from(post)
                 .where(containsKeyword(keyword))
-                .orderBy(getOrderSpecifiers(sort));
+                .orderBy(postOrders(sort));
 
         // 쿼리 실행
         List<Post> posts = contentQuery.fetch();
@@ -40,26 +41,20 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         return posts;
     }
 
-    private OrderSpecifier[] getOrderSpecifiers(Sort sort) {
-        return sort.stream()
-                .map(order -> getOrderSpecifier(order))
-                .distinct()
-                .toArray(OrderSpecifier[]::new);
-    }
-
-    private OrderSpecifier getOrderSpecifier(Sort.Order o) {
-        Order order = o.getDirection().isAscending() ? Order.ASC : Order.DESC;
-
-        Expression<?> expression = switch (o.getProperty()) {
+    public static OrderSpecifier<?>[] postOrders(Sort sort) {
+        Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
             case "created" -> post.created;
             case "comments" -> post.commentCount;
             case "likes" -> post.likeCount;
+            case "views" -> post.views;
             default -> post.created;
         };
-        return new OrderSpecifier(order, expression);
+
+        return QueryDslUtils.getOrderSpecifiers(sort, expressionFunction);
     }
 
-    private BooleanExpression containsKeyword(Keyword keyword) {
+
+    public static BooleanExpression containsKeyword(Keyword keyword) {
         return keyword == null ? null : switch (keyword.getType()) {
             case TITLE -> post.title.contains(keyword.getValue());
             case TITLE_CONTENT ->

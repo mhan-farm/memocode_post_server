@@ -45,8 +45,6 @@ public class CommentTest {
 
         Comment comment = Comment.create("content2");
         post.addComment(comment);
-
-        postRepository.save(post);
     }
 
 }

@@ -10,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -25,10 +26,10 @@ public class PostLike {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private User user;
 
     private LocalDateTime created;

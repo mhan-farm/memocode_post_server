@@ -40,6 +40,7 @@ public class TestService {
         Random random = new Random();
         for (int i=1; i<=postLikeCount; i++) {
             Post post = posts.get(random.nextInt(posts.size()));
+            post.setViews(random.nextInt(101));
             User user = users.get(random.nextInt(users.size()));
 
             post.addPostLike(user);
