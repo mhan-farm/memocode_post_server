@@ -38,6 +38,8 @@ public class Post {
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
+    private long commentCount;
+
     public static Post create(String title, String content) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
@@ -56,5 +58,6 @@ public class Post {
     public void addComment(Comment comment) {
         comment.setPost(this);
         this.comments.add(comment);
+        this.commentCount = comments.size();
     }
 }

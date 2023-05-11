@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class PostQueryDslRepositoryTest {
 
     @BeforeAll
     void init() {
-        testService.testData(50, 100);
+        testService.testData(50, 100, 10);
     }
 
     @AfterAll
@@ -115,7 +114,6 @@ public class PostQueryDslRepositoryTest {
 
         List<Post> posts = postRepository.findAll(null, sort);
 
-        assertThat(posts).isSortedAccordingTo(Comparator.comparing(
-                post -> post.getComments().size(), Comparator.reverseOrder()));
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCommentCount, Comparator.reverseOrder()));
     }
 }
