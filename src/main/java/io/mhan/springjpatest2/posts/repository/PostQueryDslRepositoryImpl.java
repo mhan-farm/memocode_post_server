@@ -53,6 +53,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         Expression<?> expression = switch (o.getProperty()) {
             case "created" -> post.created;
             case "comments" -> post.commentCount;
+            case "likes" -> post.likeCount;
             default -> post.created;
         };
         return new OrderSpecifier(order, expression);

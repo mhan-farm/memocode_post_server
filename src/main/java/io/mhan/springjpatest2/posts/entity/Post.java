@@ -1,7 +1,7 @@
 package io.mhan.springjpatest2.posts.entity;
 
 import io.mhan.springjpatest2.comments.entity.Comment;
-import io.mhan.springjpatest2.likes.PostLike;
+import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +24,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Post {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -47,10 +48,12 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = {PERSIST})
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
+    private long likeCount;
 
     public static Post create(String title, String content, User author) {
 
@@ -77,5 +80,6 @@ public class Post {
     public void addPostLike(User user) {
         PostLike postLike = PostLike.create(this, user);
         this.likes.add(postLike);
+        this.likeCount = likes.size();
     }
 }

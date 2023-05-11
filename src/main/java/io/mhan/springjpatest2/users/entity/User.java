@@ -3,10 +3,7 @@ package io.mhan.springjpatest2.users.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)

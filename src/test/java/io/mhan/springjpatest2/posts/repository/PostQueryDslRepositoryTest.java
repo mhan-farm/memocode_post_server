@@ -126,6 +126,13 @@ public class PostQueryDslRepositoryTest {
 
         List<Post> posts = postRepository.findAll(null, sort);
 
-        assertThat(posts).isSortedAccordingTo(Comparator.comparing(post -> post.getLikes().size(), Comparator.reverseOrder()));
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getLikeCount, Comparator.reverseOrder()));
     }
+
+    @Test
+    @DisplayName("title만 10이 포함된 post 조회 and 가장 조회수가 많은순으로 정렬")
+    void t8() {
+    }
+
+
 }
