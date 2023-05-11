@@ -1,12 +1,14 @@
 package io.mhan.springjpatest2.posts.repository;
 
 import io.mhan.springjpatest2.base.init.TestService;
+import io.mhan.springjpatest2.comments.repository.CommentRepository;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.vo.Keyword;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +19,7 @@ import static io.mhan.springjpatest2.posts.repository.vo.KeywordType.TITLE_CONTE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
+@Transactional
 @SpringBootTest
 @TestInstance(PER_CLASS)
 public class PostQueryDslRepositoryTest {
@@ -27,14 +30,17 @@ public class PostQueryDslRepositoryTest {
     @Autowired
     PostRepository postRepository;
 
+    @Autowired
+    CommentRepository commentRepository;
+
     @BeforeAll
-    void beforeAll() {
-        testService.testData();
+    void init() {
+        testService.testData(50, 100);
     }
 
     @AfterAll
-    void afterAll() {
-        postRepository.deleteAll();
+    void clear() {
+        testService.deleteAll();
     }
 
     @Test
@@ -55,7 +61,9 @@ public class PostQueryDslRepositoryTest {
 
         List<Post> posts = postRepository.findAll(keyword, Sort.unsorted());
 
-        assertThat(posts.size()).isEqualTo(1);
+        boolean result = posts.stream()
+                .allMatch(post -> post.getTitle().contains(keyword.getValue()));
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -68,7 +76,10 @@ public class PostQueryDslRepositoryTest {
 
         List<Post> posts = postRepository.findAll(keyword, Sort.unsorted());
 
-        assertThat(posts.size()).isEqualTo(2);
+        boolean result = posts.stream()
+                .allMatch(post -> post.getTitle().contains(keyword.getValue()) ||
+                        post.getContent().contains(keyword.getValue()));
+        assertThat(result).isTrue();
     }
 
     @Test

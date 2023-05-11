@@ -1,7 +1,10 @@
 package io.mhan.springjpatest2.comments.entity;
 
 import io.mhan.springjpatest2.posts.entity.Post;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.springframework.util.Assert;
 

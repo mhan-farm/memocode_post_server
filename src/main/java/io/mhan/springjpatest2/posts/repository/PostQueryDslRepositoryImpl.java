@@ -4,7 +4,6 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.posts.entity.Post;
@@ -12,13 +11,14 @@ import io.mhan.springjpatest2.posts.repository.vo.Keyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
 
 @Repository
+@Transactional
 @RequiredArgsConstructor
 public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
 

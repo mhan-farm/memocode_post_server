@@ -1,11 +1,11 @@
 package io.mhan.springjpatest2.posts.entity;
 
 import io.mhan.springjpatest2.comments.entity.Comment;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.*;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,7 @@ public class Post {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Setter
     private String title;
 
     private String content;
