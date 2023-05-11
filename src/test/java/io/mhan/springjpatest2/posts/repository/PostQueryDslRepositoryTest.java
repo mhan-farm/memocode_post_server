@@ -105,4 +105,17 @@ public class PostQueryDslRepositoryTest {
 
         assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCreated, Comparator.reverseOrder()));
     }
+
+    @Test
+    @DisplayName("가장 많은 답변수를 기준으로 오름차순 정렬을 하여 전체 post 조회")
+    void t6() {
+        Sort.Order order = Sort.Order.desc("comments");
+
+        Sort sort = Sort.by(order);
+
+        List<Post> posts = postRepository.findAll(null, sort);
+
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(
+                post -> post.getComments().size(), Comparator.reverseOrder()));
+    }
 }
