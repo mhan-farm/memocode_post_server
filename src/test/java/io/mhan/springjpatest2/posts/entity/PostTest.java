@@ -7,8 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+
 public class PostTest {
 
     @Autowired
@@ -18,6 +20,7 @@ public class PostTest {
     private UserRepository userRepository;
 
     @Test
+    @Transactional
     @DisplayName("post 생성")
     void t1() {
         User user = userRepository.save(User.create("user1", "pass"));

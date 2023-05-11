@@ -34,7 +34,7 @@ public class PostQueryDslRepositoryTest {
 
     @BeforeAll
     void init() {
-        testService.testData(50, 100, 10);
+        testService.testData(50, 100, 10, 50);
     }
 
     @AfterAll
@@ -106,7 +106,7 @@ public class PostQueryDslRepositoryTest {
     }
 
     @Test
-    @DisplayName("가장 많은 답변수를 기준으로 오름차순 정렬을 하여 전체 post 조회")
+    @DisplayName("가장 많은 답변수를 기준으로 정렬을 하여 전체 post 조회")
     void t6() {
         Sort.Order order = Sort.Order.desc("comments");
 
@@ -115,5 +115,17 @@ public class PostQueryDslRepositoryTest {
         List<Post> posts = postRepository.findAll(null, sort);
 
         assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getCommentCount, Comparator.reverseOrder()));
+    }
+
+    @Test
+    @DisplayName("가장 많은 좋아요가 많은 순으로 정렬을 하여 전체 post 조회")
+    void t7() {
+        Sort.Order order = Sort.Order.desc("likes");
+
+        Sort sort = Sort.by(order);
+
+        List<Post> posts = postRepository.findAll(null, sort);
+
+        assertThat(posts).isSortedAccordingTo(Comparator.comparing(post -> post.getLikes().size(), Comparator.reverseOrder()));
     }
 }

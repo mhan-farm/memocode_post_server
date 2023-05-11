@@ -1,14 +1,19 @@
 package io.mhan.springjpatest2.posts.entity;
 
 import io.mhan.springjpatest2.comments.entity.Comment;
+import io.mhan.springjpatest2.likes.PostLike;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
@@ -36,9 +41,14 @@ public class Post {
 
     private LocalDateTime updated;
 
-    @OneToMany(mappedBy = "post", cascade = PERSIST)
+    @OneToMany(mappedBy = "post", cascade = {PERSIST})
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = {PERSIST})
+    @Builder.Default
+    private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
 
@@ -62,5 +72,10 @@ public class Post {
         comment.setPost(this);
         this.comments.add(comment);
         this.commentCount = comments.size();
+    }
+
+    public void addPostLike(User user) {
+        PostLike postLike = PostLike.create(this, user);
+        this.likes.add(postLike);
     }
 }
