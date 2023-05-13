@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 @Transactional
 @SpringBootTest
 @TestInstance(PER_CLASS)
-public class PostRepositoryTest {
+public class PostRepositoryFindAllTest {
 
     @Autowired
     TestService testService;
