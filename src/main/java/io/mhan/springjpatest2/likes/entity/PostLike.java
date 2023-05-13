@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +38,10 @@ public class PostLike {
     private LocalDateTime updated;
 
     public static PostLike create(Post post, User user) {
+
+        Assert.notNull(post, "post는 null이 될 수 없습니다.");
+        Assert.notNull(user, "user는 null이 될 수 없습니다.");
+
         PostLike postLike = PostLike.builder()
                 .post(post)
                 .user(user)

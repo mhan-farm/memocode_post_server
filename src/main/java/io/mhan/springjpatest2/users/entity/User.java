@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +31,10 @@ public class User {
     private LocalDateTime updated;
 
     public static User create(String username, String password) {
+
+        Assert.notNull(username, "username는 null이 될 수 없습니다.");
+        Assert.notNull(password, "password는 null이 될 수 없습니다.");
+
         User user = User.builder()
                 .username(username)
                 .password(password)

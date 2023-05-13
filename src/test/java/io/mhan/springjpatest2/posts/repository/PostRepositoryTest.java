@@ -1,33 +1,59 @@
 package io.mhan.springjpatest2.posts.repository;
 
-import io.mhan.springjpatest2.base.RepositoryTestBase;
+import io.mhan.springjpatest2.base.init.TestService;
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.posts.repository.vo.Keyword;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
+import io.mhan.springjpatest2.users.entity.User;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static io.mhan.springjpatest2.posts.repository.vo.KeywordType.TITLE;
-import static io.mhan.springjpatest2.posts.repository.vo.KeywordType.TITLE_CONTENT;
+import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE;
+import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE_CONTENT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-public class PostQueryDslRepositoryTest extends RepositoryTestBase {
+@Transactional
+@SpringBootTest
+@TestInstance(PER_CLASS)
+public class PostRepositoryTest {
+
+    @Autowired
+    TestService testService;
+
+    @Autowired
+    PostRepository postRepository;
+
+    @BeforeAll
+    void beforeAll() {
+        List<User> authors = testService.createUsers(100);
+        List<Post> posts = testService.createTestPosts(100, 1000, authors);
+        testService.createTestComments(100, posts, authors);
+        testService.createPostLikes(100, posts, authors);
+    }
+
+    @AfterAll
+    void afterAll() {
+        testService.deleteAll();
+    }
 
     @Test
     @DisplayName("post 모두 조회")
     void t1() {
         List<Post> posts = postRepository.findAll(null, Sort.unsorted());
 
-        assertThat(posts.size()).isEqualTo(1000);
+        assertThat(posts.size()).isEqualTo(postRepository.count());
     }
 
     @Test
     @DisplayName("post의 title값이 10이 포함된 post 조회")
     void t2() {
-        Keyword keyword = Keyword.builder()
+        PostKeyword keyword = PostKeyword.builder()
                 .type(TITLE)
                 .value("10")
                 .build();
@@ -42,7 +68,7 @@ public class PostQueryDslRepositoryTest extends RepositoryTestBase {
     @Test
     @DisplayName("post의 title값이거나 content값이 10이 포함된 post 조회")
     void t3() {
-        Keyword keyword = Keyword.builder()
+        PostKeyword keyword = PostKeyword.builder()
                 .type(TITLE_CONTENT)
                 .value("10")
                 .build();
@@ -106,7 +132,7 @@ public class PostQueryDslRepositoryTest extends RepositoryTestBase {
     @Test
     @DisplayName("title만 10이 포함된 post 조회 and 가장 조회수가 많은순으로 정렬")
     void t8() {
-        Keyword keyword = Keyword.builder()
+        PostKeyword keyword = PostKeyword.builder()
                 .type(TITLE)
                 .value("10")
                 .build();
@@ -121,6 +147,4 @@ public class PostQueryDslRepositoryTest extends RepositoryTestBase {
         assertThat(result).isTrue();
         assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getViews, Comparator.reverseOrder()));
     }
-
-
 }

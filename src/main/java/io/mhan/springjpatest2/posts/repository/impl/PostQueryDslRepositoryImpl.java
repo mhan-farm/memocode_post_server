@@ -1,4 +1,4 @@
-package io.mhan.springjpatest2.posts.repository;
+package io.mhan.springjpatest2.posts.repository.impl;
 
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -7,7 +7,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.base.utils.QueryDslUtils;
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.posts.repository.vo.Keyword;
+import io.mhan.springjpatest2.posts.repository.PostQueryDslRepository;
+import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -26,7 +27,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Post> findAll(Keyword keyword, Sort sort) {
+    public List<Post> findAll(PostKeyword keyword, Sort sort) {
 
         // 쿼리 생성
         JPAQuery<Post> contentQuery = jpaQueryFactory
@@ -41,7 +42,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         return posts;
     }
 
-    public static OrderSpecifier<?>[] postOrders(Sort sort) {
+    private OrderSpecifier<?>[] postOrders(Sort sort) {
         Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
             case "created" -> post.created;
             case "comments" -> post.commentCount;
@@ -53,8 +54,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         return QueryDslUtils.getOrderSpecifiers(sort, expressionFunction);
     }
 
-
-    public static BooleanExpression containsPostKeyword(Keyword keyword) {
+    public static BooleanExpression containsPostKeyword(PostKeyword keyword) {
         return keyword == null ? null : switch (keyword.getType()) {
             case TITLE -> post.title.contains(keyword.getValue());
             case TITLE_CONTENT ->

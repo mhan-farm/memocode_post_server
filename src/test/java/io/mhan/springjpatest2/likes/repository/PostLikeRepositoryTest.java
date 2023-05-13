@@ -1,19 +1,48 @@
 package io.mhan.springjpatest2.likes.repository;
 
-import io.mhan.springjpatest2.base.RepositoryTestBase;
+import io.mhan.springjpatest2.base.init.TestService;
 import io.mhan.springjpatest2.likes.entity.PostLike;
-import io.mhan.springjpatest2.posts.repository.vo.Keyword;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import io.mhan.springjpatest2.posts.entity.Post;
+import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
+import io.mhan.springjpatest2.users.entity.User;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
 
-import static io.mhan.springjpatest2.posts.repository.vo.KeywordType.TITLE;
+import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
-public class PostLikeRepositoryTest extends RepositoryTestBase {
+@Transactional
+@SpringBootTest
+@TestInstance(PER_CLASS)
+public class PostLikeRepositoryTest {
+
+    @Autowired
+    TestService testService;
+
+    @Autowired
+    PostLikeRepository postLikeRepository;
+
+    User user1;
+
+    @BeforeAll
+    void beforeAll() {
+        List<User> authors = testService.createUsers(100);
+        List<Post> posts = testService.createTestPosts(100, 1000, authors);
+        testService.createPostLikes(1000, posts, authors);
+        user1 = authors.get(0);
+    }
+
+    @AfterAll
+    void afterAll() {
+        testService.deleteAll();
+    }
 
     @Test
     @DisplayName("user1이 좋아한 post 조회")
@@ -41,7 +70,7 @@ public class PostLikeRepositoryTest extends RepositoryTestBase {
     @Test
     @DisplayName("user1가 좋아한 post 조회 and 좋아한 post 최신순 조회 and keyword title title이 포함되게 검색")
     void t3() {
-        Keyword keyword = Keyword.builder()
+        PostKeyword keyword = PostKeyword.builder()
                 .type(TITLE)
                 .value("title")
                 .build();

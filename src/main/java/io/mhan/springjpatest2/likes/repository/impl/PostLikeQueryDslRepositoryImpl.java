@@ -1,4 +1,4 @@
-package io.mhan.springjpatest2.likes.repository;
+package io.mhan.springjpatest2.likes.repository.impl;
 
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -7,7 +7,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.base.utils.QueryDslUtils;
 import io.mhan.springjpatest2.likes.entity.PostLike;
-import io.mhan.springjpatest2.posts.repository.vo.Keyword;
+import io.mhan.springjpatest2.likes.repository.PostLikeQueryDslRepository;
+import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.likes.entity.QPostLike.postLike;
-import static io.mhan.springjpatest2.posts.repository.PostQueryDslRepositoryImpl.containsPostKeyword;
+import static io.mhan.springjpatest2.posts.repository.impl.PostQueryDslRepositoryImpl.containsPostKeyword;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,13 +26,13 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PostLike> findByUserId(Long userId, Sort sort, Keyword keyword) {
+    public List<PostLike> findByUserId(Long userId, Sort sort, PostKeyword postKeyword) {
         JPAQuery<PostLike> contentQuery = jpaQueryFactory
                 .select(postLike)
                 .from(postLike)
                 .where(
                         eqUserId(userId),
-                        containsPostKeyword(keyword)
+                        containsPostKeyword(postKeyword)
                 )
                 .orderBy(postLikeOrders(sort));
 

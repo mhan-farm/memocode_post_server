@@ -6,6 +6,8 @@ spring:
     username: testuser
     password: 5678
   jpa:
+    properties:
+      hibernate.default_batch_fetch_size: 100
     hibernate:
       ddl-auto: create
 

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import java.util.function.Function;
 
 public class QueryDslUtils {
-    public static OrderSpecifier[] getOrderSpecifiers(Sort sort, Function<String, Expression<?>> expressionFunction) {
+    public static OrderSpecifier<?>[] getOrderSpecifiers(Sort sort, Function<String, Expression<?>> expressionFunction) {
         return sort.stream()
                 .map(order -> getOrderSpecifier(order, expressionFunction))
                 .distinct()

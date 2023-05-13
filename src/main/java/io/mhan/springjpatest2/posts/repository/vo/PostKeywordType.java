@@ -1,5 +1,5 @@
 package io.mhan.springjpatest2.posts.repository.vo;
 
-public enum KeywordType {
+public enum PostKeywordType {
     TITLE, TITLE_CONTENT
 }

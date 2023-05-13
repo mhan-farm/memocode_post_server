@@ -30,7 +30,6 @@ public class Post {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Setter
     private String title;
 
     private String content;
@@ -53,15 +52,16 @@ public class Post {
     private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
+
     private long likeCount;
 
-    @Setter
     private long views;
 
     public static Post create(String title, String content, User author) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
         Assert.notNull(content, "title은 null이 될 수 없습니다.");
+        Assert.notNull(author, "author은 null이 될 수 없습니다.");
 
         Post post = Post.builder()
                 .title(title)

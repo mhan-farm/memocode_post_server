@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Keyword {
-    private KeywordType type;
+public class PostKeyword {
+    private PostKeywordType type;
     private String value;
 }
