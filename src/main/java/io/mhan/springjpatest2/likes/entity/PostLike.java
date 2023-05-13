@@ -2,10 +2,7 @@ package io.mhan.springjpatest2.likes.entity;
 
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.users.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
@@ -18,6 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Builder
+@Table(name = "post_like")
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"post", "user"})
@@ -28,9 +26,11 @@ public class PostLike {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "FK_posts_postLike"))
     private Post post;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users_postLike"))
     private User user;
 
     private LocalDateTime created;

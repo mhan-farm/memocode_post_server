@@ -1,8 +1,6 @@
 package io.mhan.springjpatest2.users.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
@@ -14,6 +12,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Builder
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_users_username", columnNames = {"username"})
+})
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -22,6 +23,7 @@ public class User {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(name = "username", nullable = false)
     private String username;
 
     private String password;

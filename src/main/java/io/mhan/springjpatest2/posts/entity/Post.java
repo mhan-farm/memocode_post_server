@@ -22,6 +22,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Builder
 @Entity
+@Table(name = "posts")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -32,9 +33,11 @@ public class Post {
 
     private String title;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "author_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users_posts"))
     private User author;
 
     private LocalDateTime created;

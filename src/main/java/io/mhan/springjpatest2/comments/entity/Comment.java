@@ -2,10 +2,7 @@ package io.mhan.springjpatest2.comments.entity;
 
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.users.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
@@ -18,6 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Builder
+@Table(name = "comments")
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class Comment {
@@ -29,10 +27,12 @@ public class Comment {
     private String content;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "FK_posts_comments"))
     @Setter
     private Post post;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users_comments"))
     private User user;
 
     private LocalDateTime created;
