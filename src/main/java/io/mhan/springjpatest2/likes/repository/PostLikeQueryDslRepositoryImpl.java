@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.base.utils.QueryDslUtils;
 import io.mhan.springjpatest2.likes.entity.PostLike;
+import io.mhan.springjpatest2.likes.entity.QPostLike;
 import io.mhan.springjpatest2.posts.repository.vo.Keyword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.likes.entity.QPostLike.postLike;
+import static io.mhan.springjpatest2.posts.entity.QPost.post;
+import static io.mhan.springjpatest2.posts.repository.PostQueryDslRepositoryImpl.containsPostKeyword;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +31,10 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
         JPAQuery<PostLike> contentQuery = jpaQueryFactory
                 .select(postLike)
                 .from(postLike)
-                .where(eqUserId(userId))
+                .where(
+                        eqUserId(userId),
+                        containsPostKeyword(keyword)
+                )
                 .orderBy(postLikeOrders(sort));
 
         List<PostLike> postLikes = contentQuery.fetch();
@@ -36,11 +42,11 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
         return postLikes;
     }
 
-    private static BooleanExpression eqUserId(Long userId) {
+    private BooleanExpression eqUserId(Long userId) {
         return postLike.user.id.eq(userId);
     }
 
-    public static OrderSpecifier<?>[] postLikeOrders(Sort sort) {
+    private OrderSpecifier<?>[] postLikeOrders(Sort sort) {
         Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
             case "created" -> postLike.created;
             default -> postLike.id;

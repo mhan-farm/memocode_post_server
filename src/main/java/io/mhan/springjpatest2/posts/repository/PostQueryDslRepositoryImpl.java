@@ -32,7 +32,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         JPAQuery<Post> contentQuery = jpaQueryFactory
                 .select(post)
                 .from(post)
-                .where(containsKeyword(keyword))
+                .where(containsPostKeyword(keyword))
                 .orderBy(postOrders(sort));
 
         // 쿼리 실행
@@ -54,7 +54,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     }
 
 
-    public static BooleanExpression containsKeyword(Keyword keyword) {
+    public static BooleanExpression containsPostKeyword(Keyword keyword) {
         return keyword == null ? null : switch (keyword.getType()) {
             case TITLE -> post.title.contains(keyword.getValue());
             case TITLE_CONTENT ->
