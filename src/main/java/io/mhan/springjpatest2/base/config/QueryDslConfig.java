@@ -3,6 +3,7 @@ package io.mhan.springjpatest2.base.config;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,5 +16,14 @@ public class QueryDslConfig {
     @Bean
     public JPAQueryFactory queryFactory() {
         return new JPAQueryFactory(entityManager);
+    }
+
+    @Bean
+    public ApplicationRunner printTransactionIsolationLevel() {
+        return args -> {
+            System.out.println("Current Transaction Isolation Level: " + entityManager
+                    .createNativeQuery("SELECT @@tx_isolation")
+                    .getSingleResult());
+        };
     }
 }

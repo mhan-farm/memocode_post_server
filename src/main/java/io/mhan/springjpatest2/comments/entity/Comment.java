@@ -28,7 +28,6 @@ public class Comment {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "FK_posts_comments"))
-    @Setter
     private Post post;
 
     @ManyToOne(fetch = LAZY)
@@ -52,5 +51,23 @@ public class Comment {
                 .build();
 
         return comment;
+    }
+
+    public void insertPost(Post post) {
+
+        Assert.notNull(post, "post는 null이 될 수 없습니다.");
+
+        if (this.post != null) {
+            throw new IllegalStateException("이미 post가 할당되어 있습니다.");
+        }
+
+        this.post = post;
+    }
+
+    public void updateContent(String content) {
+
+        Assert.notNull(content, "content는 null이 될 수 없습니다.");
+
+        this.content = content;
     }
 }

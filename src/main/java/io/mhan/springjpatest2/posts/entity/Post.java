@@ -5,6 +5,7 @@ import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.util.Assert;
@@ -25,8 +26,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "posts")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@DynamicUpdate
 public class Post {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -37,7 +39,7 @@ public class Post {
     private String content;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "author_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users_posts"))
+    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "FK_users_posts"))
     private User author;
 
     private LocalDateTime created;
@@ -45,13 +47,14 @@ public class Post {
     private LocalDateTime updated;
 
     @OneToMany(mappedBy = "post", cascade = {PERSIST})
-    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
+    @Getter(AccessLevel.NONE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = {PERSIST})
+    @OneToMany(mappedBy = "post")
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
+    @Getter(AccessLevel.NONE)
     private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
@@ -78,14 +81,12 @@ public class Post {
     }
 
     public void addComment(Comment comment) {
-        comment.setPost(this);
+        comment.insertPost(this);
         this.comments.add(comment);
         this.commentCount = comments.size();
     }
 
-    public void addPostLike(User user) {
-        PostLike postLike = PostLike.create(this, user);
-        this.likes.add(postLike);
-        this.likeCount = likes.size();
+    public void increaseLike() {
+        this.likeCount = comments.size();
     }
 }

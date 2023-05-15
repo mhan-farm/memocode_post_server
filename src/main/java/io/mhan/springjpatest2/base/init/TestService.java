@@ -3,6 +3,7 @@ package io.mhan.springjpatest2.base.init;
 import io.mhan.springjpatest2.comments.entity.Comment;
 import io.mhan.springjpatest2.comments.repository.CommentRepository;
 import io.mhan.springjpatest2.likes.repository.PostLikeRepository;
+import io.mhan.springjpatest2.likes.service.PostLikeService;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.PostRepository;
 import io.mhan.springjpatest2.users.entity.User;
@@ -11,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
@@ -31,6 +34,8 @@ public class TestService {
 
     private final PostLikeRepository postLikeRepository;
 
+    private final PostLikeService postLikeService;
+
     public void createPostLikes(int postLikeCount, List<Post> posts, List<User> authors) {
 
         List<Post> findPosts = postRepository.findByIdIn(getPostIds(posts));
@@ -41,7 +46,7 @@ public class TestService {
             Post post = findPosts.get(random.nextInt(findPosts.size()));
             User user = findAuthors.get(random.nextInt(findAuthors.size()));
 
-            post.addPostLike(user);
+            postLikeService.createAndSave(post.getId(), user.getId());
         }
     }
 
@@ -111,5 +116,10 @@ public class TestService {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Long executeInTransaction(Supplier<Long> supplier) {
+        return supplier.get();
     }
 }
