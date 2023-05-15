@@ -18,6 +18,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.NONE;
 
 @Getter
 @Builder
@@ -44,11 +45,13 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = {PERSIST})
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
+    @Getter(value = NONE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = {PERSIST})
+    @OneToMany(mappedBy = "post")
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
+    @Getter(value = NONE)
     private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
@@ -80,9 +83,7 @@ public class Post {
         this.commentCount = comments.size();
     }
 
-    public void addPostLike(User user) {
-        PostLike postLike = PostLike.create(this, user);
-        this.likes.add(postLike);
+    public void increaseLike() {
         this.likeCount = likes.size();
     }
 }

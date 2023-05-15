@@ -3,6 +3,7 @@ package io.mhan.springjpatest2.base.init;
 import io.mhan.springjpatest2.comments.entity.Comment;
 import io.mhan.springjpatest2.comments.repository.CommentRepository;
 import io.mhan.springjpatest2.likes.repository.PostLikeRepository;
+import io.mhan.springjpatest2.likes.service.PostLikeService;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.PostRepository;
 import io.mhan.springjpatest2.users.entity.User;
@@ -31,6 +32,8 @@ public class TestService {
 
     private final PostLikeRepository postLikeRepository;
 
+    private final PostLikeService postLikeService;
+
     public void createPostLikes(int postLikeCount, List<Post> posts, List<User> authors) {
 
         List<Post> findPosts = postRepository.findByIdIn(getPostIds(posts));
@@ -41,7 +44,7 @@ public class TestService {
             Post post = findPosts.get(random.nextInt(findPosts.size()));
             User user = findAuthors.get(random.nextInt(findAuthors.size()));
 
-            post.addPostLike(user);
+            postLikeService.createAndSave(post.getId(), user.getId());
         }
     }
 
