@@ -31,7 +31,6 @@ public class PostLikeService {
         }
 
         Post post = postService.findByIdElseThrow(postId);
-
         User user = userService.findByIdElseThrow(userId);
 
         PostLike postLike = postLikeRepository.save(PostLike.create(post, user));

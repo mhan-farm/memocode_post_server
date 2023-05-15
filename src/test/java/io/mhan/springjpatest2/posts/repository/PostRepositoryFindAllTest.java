@@ -7,8 +7,10 @@ import io.mhan.springjpatest2.users.entity.User;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
@@ -30,10 +32,12 @@ public class PostRepositoryFindAllTest {
     @Autowired
     PostRepository postRepository;
 
+    List<Post> posts;
+
     @BeforeAll
     void beforeAll() {
         List<User> authors = testService.createUsers(100);
-        List<Post> posts = testService.createTestPosts(100, 1000, authors);
+        posts = testService.createTestPosts(101, 1000, authors);
         testService.createTestComments(100, posts, authors);
         testService.createPostLikes(100, posts, authors);
     }
@@ -44,7 +48,6 @@ public class PostRepositoryFindAllTest {
     }
 
     @Test
-    @Rollback(false)
     @DisplayName("post 모두 조회")
     void t1() {
         List<Post> posts = postRepository.findAll(null, Sort.unsorted());
@@ -148,5 +151,27 @@ public class PostRepositoryFindAllTest {
                 .allMatch(post -> post.getTitle().contains(keyword.getValue()));
         assertThat(result).isTrue();
         assertThat(posts).isSortedAccordingTo(Comparator.comparing(Post::getViews, Comparator.reverseOrder()));
+    }
+
+    @Test
+    @DisplayName("최신순으로 페이지 번호 1번 10개 가져오기")
+    void t9() {
+        Sort.Order order = Sort.Order.desc("created");
+        Sort sort = Sort.by(order);
+        Pageable pageable = PageRequest.of(0, 10, sort);
+
+        Page<Post> page = postRepository.findAll(null, pageable);
+
+        List<Post> content = page.getContent();
+
+        assertThat(page.getTotalPages())
+                .isEqualTo(posts.size() % pageable.getPageSize() > 0 ?
+                        (posts.size() / pageable.getPageSize()) + 1 : posts.size() / pageable.getPageSize());
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.isLast()).isFalse();
+        assertThat(page.getSize()).isEqualTo(pageable.getPageSize());
+        assertThat(page.getTotalElements()).isEqualTo(posts.size());
+        assertThat(page.getNumber()).isEqualTo(pageable.getOffset());
+        assertThat(content).isSortedAccordingTo(Comparator.comparing(Post::getCreated, Comparator.reverseOrder()));
     }
 }

@@ -62,8 +62,8 @@ public class TestService {
 
     public void createTestComments(int commentCount, List<Post> posts, List<User> authors) {
 
-        List<Post> findPosts = postRepository.findByIdIn(getAuthorIds(authors));
-        List<User> findAuthors = userRepository.findByIdIn(getPostIds(posts));
+        List<Post> findPosts = postRepository.findByIdIn(getPostIds(posts));
+        List<User> findAuthors = userRepository.findByIdIn(getAuthorIds(authors));
 
         Random random = new Random();
         for (long i=1; i<=commentCount; i++) {

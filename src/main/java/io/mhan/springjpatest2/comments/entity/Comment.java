@@ -3,7 +3,10 @@ package io.mhan.springjpatest2.comments.entity;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
