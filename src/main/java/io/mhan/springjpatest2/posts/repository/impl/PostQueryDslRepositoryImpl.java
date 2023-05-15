@@ -1,6 +1,7 @@
 package io.mhan.springjpatest2.posts.repository.impl;
 
 import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
+import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE_CONTENT;
 
 @Repository
 @Transactional
@@ -47,6 +49,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
 
     @Override
     public Page<Post> findAll(PostKeyword keyword, Pageable pageable) {
+
         // 쿼리 생성
         JPAQuery<Post> contentQuery = jpaQueryFactory
                 .select(post)
@@ -68,6 +71,7 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     }
 
     private OrderSpecifier<?>[] postOrders(Sort sort) {
+
         Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
             case "created" -> post.created;
             case "comments" -> post.commentCount;
@@ -80,10 +84,23 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     }
 
     public static BooleanExpression containsPostKeyword(PostKeyword keyword) {
-        return keyword == null ? null : switch (keyword.getType()) {
+        if (keyword == null) {
+            return null;
+        }
+
+        if (keyword.getValue() == null || keyword.getValue().isBlank()) {
+            return null;
+        }
+
+        if (keyword.getType() == null) {
+            return null;
+        }
+
+        return switch (keyword.getType()) {
             case TITLE -> post.title.contains(keyword.getValue());
             case TITLE_CONTENT ->
                     post.title.contains(keyword.getValue()).or(post.content.contains(keyword.getValue()));
+            case AUTHOR -> post.author.username.contains(keyword.getValue());
         };
     }
 }
