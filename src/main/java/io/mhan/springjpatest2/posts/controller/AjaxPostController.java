@@ -8,13 +8,10 @@ import io.mhan.springjpatest2.posts.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE_CONTENT;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController

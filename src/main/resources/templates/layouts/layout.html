@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script th:src="@{/js/codemirror/bundle.js}" defer></script>
+    <style>
+        .cm-editor {
+            flex: 1;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+<header th:replace="fragments/header :: headerFragment"></header>
+
+<section layout:fragment="content" class="flex flex-1">
+    <div>내용</div>
+</section>
+
+<footer th:replace="fragments/footer :: footerFragment"></footer>
+</body>
+</html>
