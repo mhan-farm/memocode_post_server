@@ -4,6 +4,7 @@ import io.mhan.springjpatest2.base.exception.ErrorCode;
 import io.mhan.springjpatest2.base.exception.GlobalException;
 import lombok.Getter;
 
+
 @Getter
 public class UserException extends GlobalException {
 
