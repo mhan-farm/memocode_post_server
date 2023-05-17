@@ -5,6 +5,7 @@ import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -20,6 +21,7 @@ import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+@Slf4j
 @Getter
 @Builder
 @Entity
@@ -63,16 +65,19 @@ public class Post {
 
     private long views;
 
+    private boolean isDeleted;
+
     public static Post create(String title, String content, User author) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
-        Assert.notNull(content, "title은 null이 될 수 없습니다.");
+        Assert.notNull(content, "content은 null이 될 수 없습니다.");
         Assert.notNull(author, "author은 null이 될 수 없습니다.");
 
         Post post = Post.builder()
                 .title(title)
                 .content(content)
                 .author(author)
+                .isDeleted(false)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
@@ -88,5 +93,19 @@ public class Post {
 
     public void increaseLike() {
         this.likeCount = comments.size();
+    }
+
+    public void updateTitleAndContent(String title, String content) {
+
+        Assert.notNull(title, "title은 null이 될 수 없습니다.");
+        Assert.notNull(content, "content은 null이 될 수 없습니다.");
+
+        this.title = title;
+        this.content = content;
+        this.updated = LocalDateTime.now();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

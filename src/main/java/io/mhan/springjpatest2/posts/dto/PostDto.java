@@ -2,7 +2,7 @@ package io.mhan.springjpatest2.posts.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.users.entity.User;
+import io.mhan.springjpatest2.users.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,6 +58,8 @@ public class PostDto {
                 .commentCount(post.getCommentCount())
                 .likeCount(post.getLikeCount())
                 .views(post.getViews())
+                .created(post.getCreated())
+                .updated(post.getUpdated())
                 .build();
 
         return postDto;
