@@ -27,6 +27,7 @@ import static lombok.AccessLevel.NONE;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Post {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -78,7 +79,7 @@ public class Post {
     }
 
     public void addComment(Comment comment) {
-        comment.setPost(this);
+        comment.insertPost(this);
         this.comments.add(comment);
         this.commentCount = comments.size();
     }

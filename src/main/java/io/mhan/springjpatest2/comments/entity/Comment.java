@@ -53,4 +53,13 @@ public class Comment {
 
         return comment;
     }
+
+    public void insertPost(Post post) {
+
+        if (this.id != null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.post = post;
+    }
 }

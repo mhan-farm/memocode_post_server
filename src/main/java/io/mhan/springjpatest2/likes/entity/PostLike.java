@@ -2,10 +2,7 @@ package io.mhan.springjpatest2.likes.entity;
 
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.users.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
 
