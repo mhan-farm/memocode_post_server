@@ -11,4 +11,5 @@ import java.util.List;
 public interface PostQueryDslRepository {
     List<Post> findAll(PostKeyword keyword, Sort sort);
     Page<Post> findAll(PostKeyword keyword, Pageable pageable);
+    Page<Post> findByAuthorId(Long authorId, PostKeyword keyword, Pageable pageable);
 }

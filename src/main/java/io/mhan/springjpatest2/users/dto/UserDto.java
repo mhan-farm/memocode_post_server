@@ -1,19 +1,13 @@
-package io.mhan.springjpatest2.posts.dto;
+package io.mhan.springjpatest2.users.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.querydsl.core.annotations.QueryProjection;
-import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.users.entity.User;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder

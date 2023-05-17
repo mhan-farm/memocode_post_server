@@ -11,6 +11,7 @@ import java.util.List;
 
 @Configuration
 public class InitData {
+    public static Long USER_ID = 1L;
 
     @Bean
     @Profile("default")
@@ -18,6 +19,7 @@ public class InitData {
         return args -> {
             List<User> users = testService.createUsers(10);
             List<Post> posts = testService.createTestPosts(100, 1000, users);
+
             testService.createTestComments(100, posts, users);
             testService.createPostLikes(100, posts, users);
         };
