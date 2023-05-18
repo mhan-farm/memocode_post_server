@@ -41,30 +41,28 @@ public class Comment {
 
     private LocalDateTime updated;
 
-    public static Comment create(String content, User user) {
+    private boolean isDeleted;
+
+    private LocalDateTime deleted;
+
+    public static Comment create(String content, User user, Post post) {
 
         Assert.notNull(content, "content은 null이 될 수 없습니다.");
         Assert.notNull(user, "user은 null이 될 수 없습니다.");
+        Assert.notNull(post, "post는 null이 될 수 없습니다.");
 
         Comment comment = Comment.builder()
                 .content(content)
                 .user(user)
+                .post(post)
+                .isDeleted(false)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
 
+        post.increaseCommentCount();
+
         return comment;
-    }
-
-    public void insertPost(Post post) {
-
-        Assert.notNull(post, "post는 null이 될 수 없습니다.");
-
-        if (this.post != null) {
-            throw new IllegalStateException("이미 post가 할당되어 있습니다.");
-        }
-
-        this.post = post;
     }
 
     public void updateContent(String content) {
@@ -72,5 +70,11 @@ public class Comment {
         Assert.notNull(content, "content는 null이 될 수 없습니다.");
 
         this.content = content;
+        this.updated = LocalDateTime.now();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deleted = LocalDateTime.now();
     }
 }

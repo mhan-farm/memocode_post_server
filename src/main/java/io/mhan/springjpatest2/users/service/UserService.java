@@ -14,8 +14,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User findByIdElseThrow(Long id) {
-        return userRepository.findById(id)
+    public User findActiveByIdElseThrow(Long id) {
+        return userRepository.findActiveById(id)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 }

@@ -26,25 +26,21 @@ public class PostService {
 
     private final UserService userService;
 
-    public Post findByIdElseThrow(Long postId) {
-        return findById(postId)
+    public Post findActiveByIdElseThrow(Long postId) {
+        return findActiveById(postId)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }
 
+    @Transactional
     public PostDto getPostDtoById(Long postId) {
-        Post post = findByIdElseThrow(postId);
+        Post post = findActiveByIdElseThrow(postId);
+        post.increaseViews();
 
         return PostDto.fromPost(post);
     }
 
-    private Optional<Post> findById(Long id) {
-        return postRepository.findById(id);
-    }
-
-    @Transactional
-    public void increaseLike(Long postId) {
-        Post post = findByIdElseThrow(postId);
-        post.increaseLike();
+    private Optional<Post> findActiveById(Long id) {
+        return postRepository.findActiveById(id);
     }
 
     public Page<PostDto> getPostDtoAll(PostKeyword postKeyword, Pageable pageable) {
@@ -56,7 +52,7 @@ public class PostService {
 
     @Transactional
     public Long createAndSave(String title, String content, Long authorId) {
-        User author = userService.findByIdElseThrow(authorId);
+        User author = userService.findActiveByIdElseThrow(authorId);
 
         Post post = Post.create(title, content, author);
 
@@ -67,8 +63,8 @@ public class PostService {
 
     @Transactional
     public void update(String title, String content, Long postId, Long authorId) {
-        User author = userService.findByIdElseThrow(authorId);
-        Post post = findByIdElseThrow(postId);
+        User author = userService.findActiveByIdElseThrow(authorId);
+        Post post = findActiveByIdElseThrow(postId);
 
         if (!author.getId().equals(post.getAuthor().getId())) {
             throw new PostException(POST_NOT_MODIFY);
@@ -85,8 +81,8 @@ public class PostService {
 
     @Transactional
     public void deleteMyPost(Long postId, Long authorId) {
-        User author = userService.findByIdElseThrow(authorId);
-        Post post = findByIdElseThrow(postId);
+        User author = userService.findActiveByIdElseThrow(authorId);
+        Post post = findActiveByIdElseThrow(postId);
 
         if (!author.getId().equals(post.getAuthor().getId())) {
             throw new PostException(POST_NOT_DELETE);

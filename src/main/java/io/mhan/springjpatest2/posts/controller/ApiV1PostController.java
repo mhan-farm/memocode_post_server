@@ -18,8 +18,8 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ajax/posts")
-public class AjaxPostController {
+@RequestMapping("/api/v1/posts")
+public class ApiV1PostController {
 
     private final PostService postService;
 

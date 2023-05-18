@@ -30,11 +30,10 @@ public class PostLikeService {
             return opPostLike.get();
         }
 
-        Post post = postService.findByIdElseThrow(postId);
-        User user = userService.findByIdElseThrow(userId);
+        Post post = postService.findActiveByIdElseThrow(postId);
+        User user = userService.findActiveByIdElseThrow(userId);
 
         PostLike postLike = postLikeRepository.save(PostLike.create(post, user));
-        postService.increaseLike(post.getId());
 
         return postLike;
     }

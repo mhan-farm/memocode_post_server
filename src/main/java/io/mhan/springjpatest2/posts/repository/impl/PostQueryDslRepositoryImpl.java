@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
@@ -95,6 +96,25 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         JPAQuery<Long> countQuery = getCountQuery(where);
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Optional<Post> findActiveById(Long postId) {
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(
+                        eqPostId(postId),
+                        eqIsDeleted(false)
+                );
+
+        Post content = contentQuery.fetchOne();
+
+        return Optional.ofNullable(content);
+    }
+
+    private static BooleanExpression eqPostId(Long postId) {
+        return post.id.eq(postId);
     }
 
     private JPAQuery<Long> getCountQuery(Predicate... where) {

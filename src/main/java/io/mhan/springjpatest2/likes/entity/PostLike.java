@@ -51,6 +51,8 @@ public class PostLike {
                 .updated(LocalDateTime.now())
                 .build();
 
+        post.increaseLike();
+
         return postLike;
     }
 }

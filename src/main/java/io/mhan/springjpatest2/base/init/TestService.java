@@ -69,8 +69,13 @@ public class TestService {
         for (long i=1; i<=commentCount; i++) {
             Post post = findPosts.get(random.nextInt(posts.size()));
 
-            Comment comment = Comment.create("content" + i, findAuthors.get(random.nextInt(findAuthors.size())));
-            post.addComment(comment);
+            Comment comment = Comment.create(
+                    "content" + i,
+                    findAuthors.get(random.nextInt(findAuthors.size())),
+                    findPosts.get(random.nextInt(findPosts.size()))
+                    );
+
+            commentRepository.save(comment);
         }
     }
 

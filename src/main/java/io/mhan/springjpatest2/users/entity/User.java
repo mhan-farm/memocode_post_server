@@ -32,6 +32,10 @@ public class User {
 
     private LocalDateTime updated;
 
+    private boolean isDeleted;
+
+    private LocalDateTime deleted;
+
     public static User create(String username, String password) {
 
         Assert.notNull(username, "username는 null이 될 수 없습니다.");
@@ -40,10 +44,16 @@ public class User {
         User user = User.builder()
                 .username(username)
                 .password(password)
+                .isDeleted(false)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
 
         return user;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deleted = LocalDateTime.now();
     }
 }

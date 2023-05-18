@@ -85,12 +85,6 @@ public class Post {
         return post;
     }
 
-    public void addComment(Comment comment) {
-        comment.insertPost(this);
-        this.comments.add(comment);
-        this.commentCount = comments.size();
-    }
-
     public void increaseLike() {
         this.likeCount = comments.size();
     }
@@ -107,5 +101,13 @@ public class Post {
 
     public void delete() {
         this.isDeleted = true;
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount = comments.size();
+    }
+
+    public void increaseViews() {
+        this.views++;
     }
 }
