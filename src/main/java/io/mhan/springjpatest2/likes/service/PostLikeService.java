@@ -41,4 +41,6 @@ public class PostLikeService {
     private Optional<PostLike> findByPostIdAndUserId(Long postId, Long userId) {
         return postLikeRepository.findByPostIdAndUserId(postId, userId);
     }
+
+
 }
