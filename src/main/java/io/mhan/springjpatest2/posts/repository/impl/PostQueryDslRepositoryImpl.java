@@ -10,7 +10,10 @@ import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.PostQueryDslRepository;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,28 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         return posts;
     }
 
+    @Override
+    public Page<Post> findAll(PostKeyword keyword, Pageable pageable) {
+        // 쿼리 생성
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(containsPostKeyword(keyword))
+                .orderBy(postOrders(pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        // 쿼리 실행
+        List<Post> content = contentQuery.fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(containsPostKeyword(keyword));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
     private OrderSpecifier<?>[] postOrders(Sort sort) {
         Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
             case "created" -> post.created;
@@ -55,10 +80,18 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     }
 
     public static BooleanExpression containsPostKeyword(PostKeyword keyword) {
-        return keyword == null ? null : switch (keyword.getType()) {
-            case TITLE -> post.title.contains(keyword.getValue());
-            case TITLE_CONTENT ->
-                    post.title.contains(keyword.getValue()).or(post.content.contains(keyword.getValue()));
-        };
+        if (keyword == null) {
+            return null;
+        }
+
+        if (keyword.getValue() == null) {
+            return null;
+        }
+
+        return switch (keyword.getType()) {
+                    case TITLE -> post.title.contains(keyword.getValue());
+                    case TITLE_CONTENT ->
+                            post.title.contains(keyword.getValue()).or(post.content.contains(keyword.getValue()));
+                };
     }
 }
