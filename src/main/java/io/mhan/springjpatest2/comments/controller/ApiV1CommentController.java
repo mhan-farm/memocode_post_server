@@ -3,45 +3,18 @@ package io.mhan.springjpatest2.comments.controller;
 import io.mhan.springjpatest2.base.response.SuccessResponse;
 import io.mhan.springjpatest2.comments.dto.CommentDto;
 import io.mhan.springjpatest2.comments.request.CommentUpdateRequest;
-import io.mhan.springjpatest2.comments.service.CommentService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-import static io.mhan.springjpatest2.base.init.InitData.USER_ID;
+@Tag(name = "ApiV1CommentController", description = "COMMENT 사용자 CRUD")
+public interface ApiV1CommentController {
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/v1/comments")
-public class ApiV1CommentController {
+    @Operation(summary = "전체 조회")
+    SuccessResponse<CommentDto> updateComment(Long commentId, CommentUpdateRequest request);
 
-    private final CommentService commentService;
+    @Operation(summary = "삭제")
+    SuccessResponse<Void> deleteComment(Long commentId);
 
-    @PostMapping("/{commentId}")
-    public SuccessResponse<CommentDto> updateComment(
-            @PathVariable Long commentId,
-            @RequestBody CommentUpdateRequest request) {
-
-        commentService.updateMyComment(request.getContent(), commentId, USER_ID);
-        CommentDto commentDto = commentService.getActiveCommentDtoById(commentId);
-
-        return SuccessResponse.ok("comment " + commentId + " 번의 답변을 수정하였습니다.", commentDto);
-    }
-
-    @DeleteMapping("/{commentId}")
-    public SuccessResponse<Void> deleteComment(
-            @PathVariable Long commentId) {
-
-        commentService.deleteMyComment(commentId, USER_ID);
-
-        return SuccessResponse.noContent("comment " + commentId + " 번의 답변을 삭제하였습니다.");
-    }
-
-    @GetMapping("/{commentId}")
-    public SuccessResponse<CommentDto> getComment(
-            @PathVariable Long commentId) {
-
-        CommentDto commentDto = commentService.getActiveCommentDtoById(commentId);
-
-        return SuccessResponse.ok("comment " + commentId + "번의 답변을 조회하였습니다.", commentDto);
-    }
+    @Operation(summary = "단건 조회")
+    SuccessResponse<CommentDto> getComment(Long commentId);
 }

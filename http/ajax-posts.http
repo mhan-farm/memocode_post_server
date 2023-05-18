@@ -1,3 +1,0 @@
-### 전체 조회
-GET http://localhost:8080/ajax/posts
-    ?keyword=title&keywordType=title
