@@ -20,7 +20,6 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.NONE;
 
 @Slf4j
 @Getter
@@ -100,7 +99,7 @@ public class Post {
         this.updated = LocalDateTime.now();
     }
 
-    public void delete() {
+    public void softDelete() {
         this.isDeleted = true;
     }
 

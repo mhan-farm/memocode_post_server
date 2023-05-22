@@ -27,6 +27,6 @@ public interface ApiV1PostController {
     @Operation(summary = "내 post 전체 조회")
     SuccessResponse<Page<PostDto>> getMyPosts(String keywordType, String keyword, Pageable pageable);
 
-    @Operation(summary = "post 삭제")
-    SuccessResponse<Void> deleteMyPost(Long postId);
+    @Operation(summary = "소프트 삭제")
+    SuccessResponse<Void> softDeleteMyPost(Long postId);
 }

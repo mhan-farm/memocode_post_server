@@ -56,7 +56,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteMyComment(Long commentId, Long userId) {
+    public void softDeleteMyComment(Long commentId, Long userId) {
 
         Comment comment = findActiveByIdElseThrow(commentId);
 
@@ -64,7 +64,7 @@ public class CommentService {
             throw new CommentException(COMMENT_NOT_DELETE);
         }
 
-        comment.delete();
+        comment.softDelete();
     }
 
     public Comment findActiveByIdElseThrow(Long commentId) {

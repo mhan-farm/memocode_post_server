@@ -73,7 +73,7 @@ public class Comment {
         this.updated = LocalDateTime.now();
     }
 
-    public void delete() {
+    public void softDelete() {
         this.isDeleted = true;
         this.deleted = LocalDateTime.now();
     }

@@ -29,10 +29,10 @@ public class ApiV1CommentControllerImpl implements ApiV1CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public SuccessResponse<Void> deleteComment(
+    public SuccessResponse<Void> softDeleteComment(
             @PathVariable Long commentId) {
 
-        commentService.deleteMyComment(commentId, USER_ID);
+        commentService.softDeleteMyComment(commentId, USER_ID);
 
         return SuccessResponse.noContent("comment " + commentId + " 번의 답변을 삭제하였습니다.");
     }

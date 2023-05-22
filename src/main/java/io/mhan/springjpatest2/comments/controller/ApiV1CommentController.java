@@ -12,8 +12,8 @@ public interface ApiV1CommentController {
     @Operation(summary = "전체 조회")
     SuccessResponse<CommentDto> updateComment(Long commentId, CommentUpdateRequest request);
 
-    @Operation(summary = "삭제")
-    SuccessResponse<Void> deleteComment(Long commentId);
+    @Operation(summary = "소프트 삭제")
+    SuccessResponse<Void> softDeleteComment(Long commentId);
 
     @Operation(summary = "단건 조회")
     SuccessResponse<CommentDto> getComment(Long commentId);

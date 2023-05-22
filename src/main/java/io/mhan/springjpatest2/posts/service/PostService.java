@@ -80,7 +80,7 @@ public class PostService {
     }
 
     @Transactional
-    public void deleteMyPost(Long postId, Long authorId) {
+    public void softDeleteMyPost(Long postId, Long authorId) {
         User author = userService.findActiveByIdElseThrow(authorId);
         Post post = findActiveByIdElseThrow(postId);
 
@@ -88,6 +88,6 @@ public class PostService {
             throw new PostException(POST_NOT_DELETE);
         }
 
-        post.delete();
+        post.softDelete();
     }
 }

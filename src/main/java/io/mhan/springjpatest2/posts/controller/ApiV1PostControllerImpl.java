@@ -86,9 +86,9 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public SuccessResponse<Void> deleteMyPost(@PathVariable Long postId) {
+    public SuccessResponse<Void> softDeleteMyPost(@PathVariable Long postId) {
 
-        postService.deleteMyPost(postId, USER_ID);
+        postService.softDeleteMyPost(postId, USER_ID);
 
         return SuccessResponse.noContent("자신의 게시글 삭제를 성공하셨습니다.");
     }
