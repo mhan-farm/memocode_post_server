@@ -18,23 +18,27 @@ import java.util.Optional;
 public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
-    private final PostService postService;
     private final UserService userService;
+    private final PostService postService;
 
     @Transactional
     public PostLike createAndSave(Long postId, Long userId) {
-        Post post = postService.findByIdElseThrow(postId);
-        User user = userService.findByIdElseThrow(userId);
 
-        Optional<PostLike> opPostLike =  postLikeRepository.findByPostIdAndUserId(postId, userId);
+        Optional<PostLike> opPostLike = findByPostIdAndUserId(postId, userId);
 
         if (opPostLike.isPresent()) {
             return opPostLike.get();
         }
 
+        Post post = postService.findActiveByIdElseThrow(postId);
+        User user = userService.findActiveByIdElseThrow(userId);
+
         PostLike postLike = postLikeRepository.save(PostLike.create(post, user));
-        post.increaseLike();
 
         return postLike;
+    }
+
+    private Optional<PostLike> findByPostIdAndUserId(Long postId, Long userId) {
+        return postLikeRepository.findByPostIdAndUserId(postId, userId);
     }
 }

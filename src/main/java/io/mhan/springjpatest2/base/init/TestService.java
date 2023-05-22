@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
@@ -60,15 +62,20 @@ public class TestService {
 
     public void createTestComments(int commentCount, List<Post> posts, List<User> authors) {
 
-        List<Post> findPosts = postRepository.findByIdIn(getAuthorIds(authors));
-        List<User> findAuthors = userRepository.findByIdIn(getPostIds(posts));
+        List<Post> findPosts = postRepository.findByIdIn(getPostIds(posts));
+        List<User> findAuthors = userRepository.findByIdIn(getAuthorIds(authors));
 
         Random random = new Random();
         for (long i=1; i<=commentCount; i++) {
             Post post = findPosts.get(random.nextInt(posts.size()));
 
-            Comment comment = Comment.create("content" + i, findAuthors.get(random.nextInt(findAuthors.size())));
-            post.addComment(comment);
+            Comment comment = Comment.create(
+                    "content" + i,
+                    findAuthors.get(random.nextInt(findAuthors.size())),
+                    findPosts.get(random.nextInt(findPosts.size()))
+                    );
+
+            commentRepository.save(comment);
         }
     }
 
@@ -114,5 +121,10 @@ public class TestService {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Long executeInTransaction(Supplier<Long> supplier) {
+        return supplier.get();
     }
 }

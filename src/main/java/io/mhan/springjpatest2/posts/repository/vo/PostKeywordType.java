@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PostKeywordType {
     TITLE_CONTENT("title,content"),
-    TITLE("title")
-    ;
+    TITLE("title"),
+    AUTHOR("author");
 
     private final String name;
 

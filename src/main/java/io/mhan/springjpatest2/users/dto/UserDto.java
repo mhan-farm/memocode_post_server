@@ -2,16 +2,12 @@ package io.mhan.springjpatest2.users.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.mhan.springjpatest2.users.entity.User;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Builder

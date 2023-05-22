@@ -10,7 +10,10 @@ import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.likes.repository.PostLikeQueryDslRepository;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -39,6 +42,32 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
         List<PostLike> postLikes = contentQuery.fetch();
 
         return postLikes;
+    }
+
+    @Override
+    public Page<PostLike> findByUserId(Long userId, PostKeyword postKeyword, Pageable pageable) {
+        JPAQuery<PostLike> contentQuery = jpaQueryFactory
+                .select(postLike)
+                .from(postLike)
+                .where(
+                        eqUserId(userId),
+                        containsPostKeyword(postKeyword)
+                )
+                .orderBy(postLikeOrders(pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        List<PostLike> content = contentQuery.fetch();
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(postLike.count())
+                .from(postLike)
+                .where(
+                        eqUserId(userId),
+                        containsPostKeyword(postKeyword)
+                );
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     private BooleanExpression eqUserId(Long userId) {

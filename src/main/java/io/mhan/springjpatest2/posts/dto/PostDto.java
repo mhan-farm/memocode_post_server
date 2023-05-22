@@ -12,7 +12,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -32,12 +31,6 @@ public class PostDto {
     @JsonProperty("author")
     private UserDto author;
 
-    @JsonProperty("created")
-    private LocalDateTime created;
-
-    @JsonProperty("updated")
-    private LocalDateTime updated;
-
     @JsonProperty("comment_count")
     private long commentCount;
 
@@ -47,33 +40,41 @@ public class PostDto {
     @JsonProperty("views")
     private long views;
 
+    @JsonProperty("created")
+    private LocalDateTime created;
+
+    @JsonProperty("updated")
+    private LocalDateTime updated;
+
     public static PostDto fromPost(Post post) {
-        UserDto userDto = UserDto.fromUser(post.getAuthor());
+
+        UserDto author = UserDto.fromUser(post.getAuthor());
 
         PostDto postDto = PostDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .author(userDto)
-                .created(post.getCreated())
+                .author(author)
                 .commentCount(post.getCommentCount())
                 .likeCount(post.getLikeCount())
                 .views(post.getViews())
+                .created(post.getCreated())
+                .updated(post.getUpdated())
                 .build();
 
         return postDto;
     }
 
     public static List<PostDto> fromPosts(List<Post> posts) {
-        return posts.stream()
+
+        List<PostDto> postDtos = posts.stream()
                 .map(PostDto::fromPost)
-                .collect(Collectors.toList());
+                .toList();
+        return postDtos;
     }
 
-    public static Page<PostDto> fromPagePosts(Page<Post> page) {
-        List<Post> posts = page.getContent();
-
-        List<PostDto> postDtos = PostDto.fromPosts(posts);
+    public static Page<PostDto> fromPagePost(Page<Post> page) {
+        List<PostDto> postDtos = PostDto.fromPosts(page.getContent());
 
         return PageableExecutionUtils.getPage(postDtos, page.getPageable(), page::getTotalElements);
     }

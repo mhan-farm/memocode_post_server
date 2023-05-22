@@ -2,6 +2,7 @@ package io.mhan.springjpatest2.posts.repository.impl;
 
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
@@ -47,11 +49,17 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
 
     @Override
     public Page<Post> findAll(PostKeyword keyword, Pageable pageable) {
+
+        Predicate[] where = {
+                containsPostKeyword(keyword),
+                eqIsDeleted(false)
+        };
+
         // 쿼리 생성
         JPAQuery<Post> contentQuery = jpaQueryFactory
                 .select(post)
                 .from(post)
-                .where(containsPostKeyword(keyword))
+                .where(where)
                 .orderBy(postOrders(pageable.getSort()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
@@ -59,21 +67,79 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         // 쿼리 실행
         List<Post> content = contentQuery.fetch();
 
-        JPAQuery<Long> countQuery = jpaQueryFactory
-                .select(post.count())
-                .from(post)
-                .where(containsPostKeyword(keyword));
+        JPAQuery<Long> countQuery = getCountQuery(where);
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Page<Post> findByAuthorId(Long authorId, PostKeyword keyword, Pageable pageable) {
+
+        Predicate[] where = {
+                eqAuthorId(authorId),
+                containsPostKeyword(keyword),
+                eqIsDeleted(false)
+        };
+
+        // 쿼리 생성
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(where)
+                .orderBy(postOrders(pageable.getSort()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        // 쿼리 실행
+        List<Post> content = contentQuery.fetch();
+
+        JPAQuery<Long> countQuery = getCountQuery(where);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Optional<Post> findActiveById(Long postId) {
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(
+                        eqPostId(postId),
+                        eqIsDeleted(false)
+                );
+
+        Post content = contentQuery.fetchOne();
+
+        return Optional.ofNullable(content);
+    }
+
+    private static BooleanExpression eqPostId(Long postId) {
+        return post.id.eq(postId);
+    }
+
+    private JPAQuery<Long> getCountQuery(Predicate... where) {
+        return jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(where);
+    }
+
+    private static BooleanExpression eqIsDeleted(boolean isDeleted) {
+        return post.isDeleted.eq(isDeleted);
+    }
+
+    private static BooleanExpression eqAuthorId(Long authorId) {
+        return post.author.id.eq(authorId);
+    }
+
     private OrderSpecifier<?>[] postOrders(Sort sort) {
+
         Function<String, Expression<?>> expressionFunction = (property) -> switch (property) {
-            case "created" -> post.created;
+            case "created" -> post.id;
             case "comments" -> post.commentCount;
             case "likes" -> post.likeCount;
             case "views" -> post.views;
-            default -> post.created;
+            default -> post.id;
         };
 
         return QueryDslUtils.getOrderSpecifiers(sort, expressionFunction);
@@ -84,14 +150,19 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
             return null;
         }
 
-        if (keyword.getValue() == null) {
+        if (keyword.getValue() == null || keyword.getValue().isBlank()) {
+            return null;
+        }
+
+        if (keyword.getType() == null) {
             return null;
         }
 
         return switch (keyword.getType()) {
-                    case TITLE -> post.title.contains(keyword.getValue());
-                    case TITLE_CONTENT ->
-                            post.title.contains(keyword.getValue()).or(post.content.contains(keyword.getValue()));
-                };
+            case TITLE -> post.title.contains(keyword.getValue());
+            case TITLE_CONTENT ->
+                    post.title.contains(keyword.getValue()).or(post.content.contains(keyword.getValue()));
+            case AUTHOR -> post.author.username.contains(keyword.getValue());
+        };
     }
 }

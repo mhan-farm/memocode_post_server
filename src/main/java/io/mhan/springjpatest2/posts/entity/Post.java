@@ -5,6 +5,8 @@ import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.util.Assert;
@@ -20,12 +22,14 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.NONE;
 
+@Slf4j
 @Getter
 @Builder
 @Entity
+@Table(name = "posts")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@DynamicUpdate
 public class Post {
 
     @Id
@@ -34,9 +38,11 @@ public class Post {
 
     private String title;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "FK_users_posts"))
     private User author;
 
     private LocalDateTime created;
@@ -44,15 +50,14 @@ public class Post {
     private LocalDateTime updated;
 
     @OneToMany(mappedBy = "post", cascade = {PERSIST})
-    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
-    @Getter(value = NONE)
+    @Getter(AccessLevel.NONE)
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
-    @Getter(value = NONE)
+    @Getter(AccessLevel.NONE)
     private Set<PostLike> likes = new HashSet<>();
 
     private long commentCount;
@@ -61,16 +66,19 @@ public class Post {
 
     private long views;
 
+    private boolean isDeleted;
+
     public static Post create(String title, String content, User author) {
 
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
-        Assert.notNull(content, "title은 null이 될 수 없습니다.");
+        Assert.notNull(content, "content은 null이 될 수 없습니다.");
         Assert.notNull(author, "author은 null이 될 수 없습니다.");
 
         Post post = Post.builder()
                 .title(title)
                 .content(content)
                 .author(author)
+                .isDeleted(false)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
@@ -78,13 +86,29 @@ public class Post {
         return post;
     }
 
-    public void addComment(Comment comment) {
-        comment.insertPost(this);
-        this.comments.add(comment);
+    public void increaseLike() {
+        this.likeCount = comments.size();
+    }
+
+    public void updateTitleAndContent(String title, String content) {
+
+        Assert.notNull(title, "title은 null이 될 수 없습니다.");
+        Assert.notNull(content, "content은 null이 될 수 없습니다.");
+
+        this.title = title;
+        this.content = content;
+        this.updated = LocalDateTime.now();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public void increaseCommentCount() {
         this.commentCount = comments.size();
     }
 
-    public void increaseLike() {
-        this.likeCount = likes.size();
+    public void increaseViews() {
+        this.views++;
     }
 }
