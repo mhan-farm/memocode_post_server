@@ -12,6 +12,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -40,6 +41,9 @@ public class PostDto {
     @JsonProperty("views")
     private long views;
 
+    @JsonProperty("tags")
+    private String tags;
+
     @JsonProperty("created")
     private LocalDateTime created;
 
@@ -50,11 +54,16 @@ public class PostDto {
 
         UserDto author = UserDto.fromUser(post.getAuthor());
 
+        String stringTags = post.getTags().stream()
+                .map(postTag -> postTag.getTag().getName())
+                .collect(Collectors.joining(","));
+
         PostDto postDto = PostDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(author)
+                .tags(stringTags)
                 .commentCount(post.getCommentCount())
                 .likeCount(post.getLikeCount())
                 .views(post.getViews())

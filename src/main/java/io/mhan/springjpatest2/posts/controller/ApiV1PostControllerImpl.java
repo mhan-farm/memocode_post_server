@@ -41,7 +41,7 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
     @PostMapping
     public SuccessResponse<PostDto> newPost(@RequestBody PostCreateRequest request) {
 
-        Long postId = postService.createAndSave(request.getTitle(), request.getContent(), USER_ID);
+        Long postId = postService.createAndSave(request.getTitle(), request.getContent(), USER_ID, request.getTags());
 
         PostDto postDto = postService.getPostDtoById(postId);
 
@@ -52,7 +52,7 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
     public SuccessResponse<PostDto> updatePost(@PathVariable Long postId,
                                                @RequestBody PostUpdateRequest request) {
 
-        postService.update(request.getTitle(), request.getContent(), postId, USER_ID);
+        postService.update(request.getTitle(), request.getContent(), postId, USER_ID, request.getTags());
 
         PostDto postDto = postService.getPostDtoById(postId);
 
@@ -60,12 +60,9 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
     }
 
     @GetMapping("/{postId}")
-    public SuccessResponse<PostDto> getPost(@PathVariable Long postId,
-                                            @RequestBody PostUpdateRequest request) {
+    public SuccessResponse<PostDto> getPost(@PathVariable Long postId) {
 
-        postService.update(request.getTitle(), request.getContent(), postId, USER_ID);
-
-        PostDto postDto = postService.getPostDtoById(postId);
+        PostDto postDto = postService.getPostDtoByIdAndIncreaseViews(postId);
 
         return SuccessResponse.ok("게시글 조회에 성공하셨습니다.", postDto);
     }

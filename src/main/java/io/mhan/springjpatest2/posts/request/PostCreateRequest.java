@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class PostCreateRequest {
     private String title;
     private String content;
+    private String tags;
 }

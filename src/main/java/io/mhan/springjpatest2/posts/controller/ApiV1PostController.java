@@ -22,7 +22,7 @@ public interface ApiV1PostController {
     SuccessResponse<PostDto> updatePost(Long postId, PostUpdateRequest request);
 
     @Operation(summary = "단건 조회")
-    SuccessResponse<PostDto> getPost(Long postId, PostUpdateRequest request);
+    SuccessResponse<PostDto> getPost(Long postId);
 
     @Operation(summary = "내 post 전체 조회")
     SuccessResponse<Page<PostDto>> getMyPosts(String keywordType, String keyword, Pageable pageable);

@@ -2,6 +2,8 @@ package io.mhan.springjpatest2.posts.entity;
 
 import io.mhan.springjpatest2.comments.entity.Comment;
 import io.mhan.springjpatest2.likes.entity.PostLike;
+import io.mhan.springjpatest2.tags.entity.PostTag;
+import io.mhan.springjpatest2.tags.entity.Tag;
 import io.mhan.springjpatest2.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +31,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicUpdate
+@EqualsAndHashCode(of = "id")
 public class Post {
 
     @Id
@@ -58,6 +61,10 @@ public class Post {
     @Builder.Default
     @Getter(AccessLevel.NONE)
     private Set<PostLike> likes = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = PERSIST, orphanRemoval = true)
+    @Builder.Default
+    private Set<PostTag> tags = new HashSet<>();
 
     private long commentCount;
 
@@ -109,5 +116,19 @@ public class Post {
 
     public void increaseViews() {
         this.views++;
+    }
+
+    public void addTags(Set<Tag> tags) {
+        tags.forEach(tag -> {
+            PostTag postTag = PostTag.create(this, tag);
+            this.tags.add(postTag);
+        });
+        this.updated = LocalDateTime.now();
+    }
+
+    public void updateTags(Set<Tag> tags) {
+        this.tags.clear();
+        addTags(tags);
+        this.updated = LocalDateTime.now();
     }
 }
