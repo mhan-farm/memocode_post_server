@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import static io.mhan.springjpatest2.base.init.InitData.USER_ID;
+import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE_CONTENT;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -25,7 +26,8 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
 
     @GetMapping
     public SuccessResponse<Page<PostDto>> getAll(
-            String keywordType, String keyword,
+            @RequestParam(required = false, value = "title,content") String keywordType,
+            @RequestParam(required = false, value = "") String keyword,
             @PageableDefault(sort = "created", direction = DESC) Pageable pageable) {
 
         PostKeyword postKeyword = PostKeyword.builder()
@@ -69,7 +71,8 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
 
     @GetMapping("/my")
     public SuccessResponse<Page<PostDto>> getMyPosts(
-            String keywordType, String keyword,
+            @RequestParam(required = false, value = "title,content") String keywordType,
+            @RequestParam(required = false, value = "") String keyword,
             @PageableDefault(sort = "created", direction = DESC) Pageable pageable) {
 
         PostKeyword postKeyword = PostKeyword.builder()
