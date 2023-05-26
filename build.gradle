@@ -27,6 +27,7 @@ dependencies {
 
     // spring doc
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
