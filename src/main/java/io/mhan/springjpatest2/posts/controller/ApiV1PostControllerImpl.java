@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import static io.mhan.springjpatest2.base.init.InitData.USER_ID;
-import static io.mhan.springjpatest2.posts.repository.vo.PostKeywordType.TITLE_CONTENT;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
