@@ -32,6 +32,15 @@ dependencies {
     // spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // amazonaws s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.476'
+
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // MIME 타입 검증
+    implementation 'org.apache.tika:tika-core:1.28'
+
     // querydsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
