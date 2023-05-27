@@ -1,5 +1,6 @@
 package io.mhan.springjpatest2.aws.s3.service;
 
+import io.mhan.springjpatest2.aws.s3.properties.AmazonS3Properties;
 import io.mhan.springjpatest2.aws.s3.repository.AmazonS3Repository;
 import io.mhan.springjpatest2.utils.MimeTypeUtils;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +10,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class AmazonS3Service {
-    private final static String END_POINT = "https://vvovv.cdn.ntruss.com/";
-    private final static String BUCKET_NAME = "vvovv";
+
     private final static String IMAGE_FOLDER_NAME = "i/";
+
+    private final AmazonS3Properties amazonS3Properties;
 
     private final AmazonS3Repository amazonRepository;
 
@@ -27,9 +29,9 @@ public class AmazonS3Service {
 
         String objectName = IMAGE_FOLDER_NAME + name + "." + fileExtension;
 
-        amazonRepository.upload(BUCKET_NAME, objectName, file, mimeType);
+        amazonRepository.upload(amazonS3Properties.getBucketName(), objectName, file, mimeType);
 
-        String url = END_POINT + objectName;
+        String url = amazonS3Properties.getCdnEndPoint() + objectName;
 
         return url;
     }
