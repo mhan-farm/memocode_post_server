@@ -13,6 +13,7 @@ public enum ErrorCode {
     POST_NOT_FOUND(404, "post가 존재하지 않습니다."),
     POST_NOT_MODIFY(403, "post를 수정할 권한이 없습니다."),
     POST_NOT_DELETE(403, "post를 삭제할 권한이 없습니다."),
+    CAN_NOT_ACCESS_POST(403, "post에 접근할 권한이 없습니다."),
     ;
 
     private final int status;

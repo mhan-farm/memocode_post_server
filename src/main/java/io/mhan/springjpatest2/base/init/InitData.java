@@ -24,6 +24,8 @@ public class InitData {
 
             testService.createTestComments(100, posts, users);
             testService.createPostLikes(100, posts, users);
+
+            testService.createTestSubPosts(posts.get(0), 10, 100);
         };
     }
 }

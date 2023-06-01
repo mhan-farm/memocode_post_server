@@ -5,6 +5,7 @@ import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.exception.PostException;
 import io.mhan.springjpatest2.posts.repository.PostRepository;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
+import io.mhan.springjpatest2.posts.request.PostCreateRequest;
 import io.mhan.springjpatest2.tags.entity.Tag;
 import io.mhan.springjpatest2.tags.service.TagService;
 import io.mhan.springjpatest2.users.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Optional;
 import java.util.Set;
@@ -71,19 +73,55 @@ public class PostService {
     }
 
     @Transactional
-    public Long createAndSave(String title, String content, Long authorId, String tagNames) {
+    public Long registerPost(Long authorId, PostCreateRequest request) {
+
+        String title = request.getTitle();
+        String content = request.getContent();
+        String tagNames = request.getTags();
+        Long parentId = request.getParentId();
+
+        Assert.notNull(authorId, "authorId은 null일 수 없습니다.");
+        Assert.notNull(title, "title은 null일 수 없습니다.");
+        Assert.notNull(content, "content은 null일 수 없습니다.");
+        Assert.notNull(tagNames, "tagNames은 null일 수 없습니다.");
+
+        if (parentId != null && parentId <= 0) {
+            throw new IllegalArgumentException("parentId가 잘못된 인수가 포함되어 있습니다.");
+        }
+
+        if (parentId != null) {
+            Post parentPost = findActiveByIdElseThrow(parentId);
+
+            User author = parentPost.getAuthor();
+            if (!author.getId().equals(authorId)) {
+                throw new PostException(CAN_NOT_ACCESS_POST);
+            }
+
+            Post savedPost = createAndSave(title, content, tagNames, author);
+
+            parentPost.addChildPosts(savedPost);
+
+            return savedPost.getId();
+        }
 
         User author = userService.findActiveByIdElseThrow(authorId);
 
-        Post post = Post.create(title, content, author);
+        Post savedPost = createAndSave(title, content, tagNames, author);
 
-        Post savedPost = postRepository.save(post);
-
-        Set<Tag> tags = tagService.findOrCreateAndSaveTagsByStringNames(tagNames);
-
-        savedPost.addTags(tags);
+        long postCount = postRepository.countActiveAllByAuthorIdAndParentPostIsNull(authorId);
+        savedPost.updateSequence(postCount + 1);
 
         return savedPost.getId();
+    }
+
+    private Post createAndSave(String title, String content, String tagNames, User author) {
+        Post post = Post.create(title, content, author);
+
+        Set<Tag> tags = tagService.findOrCreateAndSaveTagsByStringNames(tagNames);
+        post.addTags(tags);
+
+        Post savedPost = postRepository.save(post);
+        return savedPost;
     }
 
     @Transactional

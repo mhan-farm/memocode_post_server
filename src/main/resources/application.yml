@@ -1,5 +1,6 @@
 spring:
   profiles:
+    active: default
     include: secret
   servlet:
     multipart:

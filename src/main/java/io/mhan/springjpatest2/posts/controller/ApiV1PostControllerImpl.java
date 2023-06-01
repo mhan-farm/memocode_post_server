@@ -47,7 +47,7 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
     @PostMapping
     public SuccessResponse<PostDto> newPost(@RequestBody PostCreateRequest request) {
 
-        Long postId = postService.createAndSave(request.getTitle(), request.getContent(), USER_ID, request.getTags());
+        Long postId = postService.registerPost(USER_ID, request);
 
         PostDto postDto = postService.getPostDtoById(postId);
 

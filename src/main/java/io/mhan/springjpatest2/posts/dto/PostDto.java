@@ -44,6 +44,9 @@ public class PostDto {
     @JsonProperty("tags")
     private String tags;
 
+    @JsonProperty("order")
+    private long order;
+
     @JsonProperty("created")
     private LocalDateTime created;
 
@@ -64,6 +67,7 @@ public class PostDto {
                 .content(post.getContent())
                 .author(author)
                 .tags(stringTags)
+                .order(post.getSequence())
                 .commentCount(post.getCommentCount())
                 .likeCount(post.getLikeCount())
                 .views(post.getViews())

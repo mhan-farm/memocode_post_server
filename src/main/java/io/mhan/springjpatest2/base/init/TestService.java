@@ -6,6 +6,8 @@ import io.mhan.springjpatest2.likes.repository.PostLikeRepository;
 import io.mhan.springjpatest2.likes.service.PostLikeService;
 import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.PostRepository;
+import io.mhan.springjpatest2.posts.request.PostCreateRequest;
+import io.mhan.springjpatest2.posts.service.PostService;
 import io.mhan.springjpatest2.users.entity.User;
 import io.mhan.springjpatest2.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class TestService {
     private final PostLikeRepository postLikeRepository;
 
     private final PostLikeService postLikeService;
+    private final PostService postService;
 
     public void createPostLikes(int postLikeCount, List<Post> posts, List<User> authors) {
 
@@ -86,12 +89,39 @@ public class TestService {
         Random random = new Random();
         for (long i=1; i<=postCount; i++) {
             User author = findAuthors.get(random.nextInt(findAuthors.size()));
-            Post post = Post.create("title" + i, "content" + (i + 1), author);
+
+            PostCreateRequest request = PostCreateRequest.builder()
+                    .title("title" + i)
+                    .content("content" + (i + 1))
+                    .tags("a,b,c")
+                    .build();
+            Long postId = postService.registerPost(author.getId(), request);
+            Post post = postService.findActiveByIdElseThrow(postId);
             setViews(post, random.nextInt(viewRange));
-            postRepository.save(post);
         }
 
         return postRepository.findAll(null, Sort.unsorted());
+    }
+
+    public void createTestSubPosts(Post post, int subPostCount, int viewRange) {
+
+        User author = post.getAuthor();
+        Long parentPostId = post.getId();
+
+        Random random = new Random();
+        for (long i=1; i<=subPostCount; i++) {
+
+            PostCreateRequest request = PostCreateRequest.builder()
+                    .title("title" + i)
+                    .content("content" + (i + 1))
+                    .tags("a,b,c")
+                    .parentId(parentPostId)
+                    .build();
+
+            Long postId = postService.registerPost(author.getId(), request);
+            Post subPost = postService.findActiveByIdElseThrow(postId);
+            setViews(subPost, random.nextInt(viewRange));
+        }
     }
 
     public void deleteAll() {

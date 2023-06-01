@@ -113,6 +113,41 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         return Optional.ofNullable(content);
     }
 
+    @Override
+    public List<Post> findActiveAllByAuthorIdAndParentPostIsNull(Long authorId) {
+
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(
+                        eqAuthorId(authorId),
+                        eqIsDeleted(false),
+                        post.parentPost.isNull()
+                )
+                .orderBy(post.sequence.asc());
+
+        List<Post> content = contentQuery.fetch();
+
+        return content;
+    }
+
+    @Override
+    public long countActiveAllByAuthorIdAndParentPostIsNull(Long authorId) {
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(
+                        eqAuthorId(authorId),
+                        eqIsDeleted(false),
+                        post.parentPost.isNull()
+                );
+
+        Long count = countQuery.fetchOne();
+
+        return count;
+    }
+
     private static BooleanExpression eqPostId(Long postId) {
         return post.id.eq(postId);
     }

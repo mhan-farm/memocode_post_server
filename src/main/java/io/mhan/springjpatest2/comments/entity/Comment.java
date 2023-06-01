@@ -30,11 +30,11 @@ public class Comment {
     private String content;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "FK_posts_comments"))
+    @JoinColumn(name = "post_id", foreignKey = @ForeignKey(name = "FK_posts_comments"))
     private Post post;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users_comments"))
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_users_comments"))
     private User user;
 
     private LocalDateTime created;

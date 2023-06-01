@@ -10,7 +10,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Where;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
@@ -22,6 +22,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static org.hibernate.annotations.LazyCollectionOption.EXTRA;
 
 @Slf4j
 @Getter
@@ -57,7 +58,7 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @LazyCollection(EXTRA)
     @Builder.Default
     @Getter(AccessLevel.NONE)
     private Set<PostLike> likes = new HashSet<>();
@@ -66,6 +67,18 @@ public class Post {
     @Builder.Default
     private Set<PostTag> tags = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_post_id")
+    private Post parentPost;
+
+    @OneToMany(mappedBy = "parentPost", cascade = PERSIST)
+    @LazyCollection(EXTRA)
+    @OrderBy("sequence asc")
+    @Where(clause = "is_deleted = false")
+    private List<Post> childPosts = new ArrayList<>();
+
+    private long sequence;
+
     private long commentCount;
 
     private long likeCount;
@@ -73,6 +86,8 @@ public class Post {
     private long views;
 
     private boolean isDeleted;
+
+    private LocalDateTime deletedAt;
 
     public static Post create(String title, String content, User author) {
 
@@ -108,6 +123,7 @@ public class Post {
 
     public void softDelete() {
         this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 
     public void increaseCommentCount() {
@@ -130,5 +146,23 @@ public class Post {
         this.tags.clear();
         addTags(tags);
         this.updated = LocalDateTime.now();
+    }
+
+    public void addChildPosts(Post post) {
+
+        int childPostCount = childPosts.size() + 1;
+
+        post.updateSequence(childPostCount);
+        post.updateParentPost(this);
+
+        this.childPosts.add(post);
+    }
+
+    private void updateParentPost(Post parentPost) {
+        this.parentPost = parentPost;
+    }
+
+    public void updateSequence(long sequence) {
+        this.sequence = sequence;
     }
 }
