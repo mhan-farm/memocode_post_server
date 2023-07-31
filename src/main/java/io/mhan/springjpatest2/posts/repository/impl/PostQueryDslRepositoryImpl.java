@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.mhan.springjpatest2.base.utils.QueryDslUtils;
 import io.mhan.springjpatest2.posts.entity.Post;
+import io.mhan.springjpatest2.posts.exception.PostException;
 import io.mhan.springjpatest2.posts.repository.PostQueryDslRepository;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static io.mhan.springjpatest2.base.exception.ErrorCode.INCORRECT_SEQUENCE_NUMBER_POST;
 import static io.mhan.springjpatest2.posts.entity.QPost.post;
 
 @Repository
@@ -114,24 +116,6 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
     }
 
     @Override
-    public List<Post> findActiveAllByAuthorIdAndParentPostIsNull(Long authorId) {
-
-        JPAQuery<Post> contentQuery = jpaQueryFactory
-                .select(post)
-                .from(post)
-                .where(
-                        eqAuthorId(authorId),
-                        eqIsDeleted(false),
-                        post.parentPost.isNull()
-                )
-                .orderBy(post.sequence.asc());
-
-        List<Post> content = contentQuery.fetch();
-
-        return content;
-    }
-
-    @Override
     public long countActiveAllByAuthorIdAndParentPostIsNull(Long authorId) {
 
         JPAQuery<Long> countQuery = jpaQueryFactory
@@ -146,6 +130,71 @@ public class PostQueryDslRepositoryImpl implements PostQueryDslRepository {
         Long count = countQuery.fetchOne();
 
         return count;
+    }
+
+    @Override
+    public long countActiveAllByAuthorIdAndParentPost(Long authorId, Post parentPost) {
+
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(
+                        eqAuthorId(authorId),
+                        eqIsDeleted(false),
+                        eqParentPost(parentPost)
+                );
+
+        Long count = countQuery.fetchOne();
+
+        return count;
+    }
+
+    @Override
+    public List<Post> findActiveAllByAuthorIdAndParentPostOrderBySequenceASC(Long authorId, Post parentPost) {
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(
+                        eqAuthorId(authorId),
+                        eqIsDeleted(false),
+                        eqParentPost(parentPost)
+                )
+                .orderBy(post.sequence.asc());
+
+        List<Post> content = contentQuery.fetch();
+
+        return content;
+    }
+
+    @Override
+    public List<Post> findActiveAllByAuthorIdAndParentPostBetweenSequenceOrderBySequenceASC(
+            Long authorId, Post parentPost, Long startSequence, Long endSequence) {
+        JPAQuery<Post> contentQuery = jpaQueryFactory
+                .select(post)
+                .from(post)
+                .where(
+                        eqAuthorId(authorId),
+                        eqIsDeleted(false),
+                        eqParentPost(parentPost),
+                        post.sequence.between(startSequence, endSequence)
+                )
+                .orderBy(post.sequence.asc());
+
+        List<Post> content = contentQuery.fetch();
+
+        return content;
+    }
+
+    private BooleanExpression eqParentPost(Post parentPost) {
+        if (parentPost == null) {
+            return post.parentPost.isNull();
+        }
+
+        if (parentPost.getId() <= 0) {
+            throw new PostException(INCORRECT_SEQUENCE_NUMBER_POST);
+        }
+
+        return post.parentPost.id.eq(parentPost.getId());
     }
 
     private static BooleanExpression eqPostId(Long postId) {

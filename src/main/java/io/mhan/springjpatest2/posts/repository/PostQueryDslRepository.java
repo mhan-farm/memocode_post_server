@@ -14,7 +14,8 @@ public interface PostQueryDslRepository {
     Page<Post> findAll(PostKeyword keyword, Pageable pageable);
     Page<Post> findByAuthorId(Long authorId, PostKeyword keyword, Pageable pageable);
     Optional<Post> findActiveById(Long postId);
-
-    List<Post> findActiveAllByAuthorIdAndParentPostIsNull(Long authorId);
     long countActiveAllByAuthorIdAndParentPostIsNull(Long authorId);
+    long countActiveAllByAuthorIdAndParentPost(Long authorId, Post parentPost);
+    List<Post> findActiveAllByAuthorIdAndParentPostOrderBySequenceASC(Long authorId, Post parentPost);
+    List<Post> findActiveAllByAuthorIdAndParentPostBetweenSequenceOrderBySequenceASC(Long authorId, Post parentPost, Long startSequence, Long endSequence);
 }

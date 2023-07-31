@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -156,5 +157,65 @@ public class PostService {
         }
 
         post.softDelete();
+    }
+
+    @Transactional
+    public void rearrangePostSequence(Long postId, long wantedSequence, Long authorId) {
+        if (wantedSequence <= 0) {
+            throw new PostException(INCORRECT_SEQUENCE_NUMBER_POST);
+        }
+
+        Post post = findActiveByIdElseThrow(postId);
+
+        User author = post.getAuthor();
+        if (!author.getId().equals(authorId)) {
+            throw new PostException(CAN_NOT_ACCESS_POST);
+        }
+
+        Post parentPost = post.getParentPost();
+        long currentSequence = post.getSequence();
+
+        if (wantedSequence == post.getSequence()) {
+            throw new PostException(ALREADY_EQUAL_SEQUENCE_POST);
+        }
+
+        long postCount = postRepository.countActiveAllByAuthorIdAndParentPost(authorId, parentPost);
+        if (wantedSequence > postCount) {
+            throw new PostException(INCORRECT_SEQUENCE_NUMBER_POST);
+        }
+
+        if (currentSequence < wantedSequence) {
+            List<Post> subsequentPosts =
+                    postRepository.findActiveAllByAuthorIdAndParentPostBetweenSequenceOrderBySequenceASC(
+                            authorId, parentPost, currentSequence + 1, wantedSequence);
+            subsequentPosts
+                    .forEach(subsequentPost -> subsequentPost.updateSequence(subsequentPost.getSequence() - 1));
+            post.updateSequence(wantedSequence);
+            return;
+        }
+
+        if (currentSequence > wantedSequence) {
+            List<Post> subsequentPosts =
+                    postRepository.findActiveAllByAuthorIdAndParentPostBetweenSequenceOrderBySequenceASC(
+                            authorId, parentPost, wantedSequence, currentSequence - 1);
+            subsequentPosts
+                    .forEach(subsequentPost -> subsequentPost.updateSequence(subsequentPost.getSequence() + 1));
+            post.updateSequence(wantedSequence);
+            return;
+        }
+
+        throw new PostException(INTERNAL_ERROR);
+    }
+
+    @Transactional
+    public List<Post> findByAuthorIdAndParentPostId(Long authorId, Long parentPostId) {
+        Post parentPost = findActiveByIdElseThrow(parentPostId);
+
+        User author = parentPost.getAuthor();
+        if (!author.getId().equals(authorId)) {
+            throw new PostException(CAN_NOT_ACCESS_POST);
+        }
+
+        return postRepository.findActiveAllByAuthorIdAndParentPostOrderBySequenceASC(authorId, parentPost);
     }
 }

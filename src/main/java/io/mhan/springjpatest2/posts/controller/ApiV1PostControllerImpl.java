@@ -3,6 +3,8 @@ package io.mhan.springjpatest2.posts.controller;
 import io.mhan.springjpatest2.base.response.SuccessResponse;
 import io.mhan.springjpatest2.images.service.ImageService;
 import io.mhan.springjpatest2.posts.dto.PostDto;
+import io.mhan.springjpatest2.posts.dto.RearrangePostSequence;
+import io.mhan.springjpatest2.posts.entity.Post;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeyword;
 import io.mhan.springjpatest2.posts.repository.vo.PostKeywordType;
 import io.mhan.springjpatest2.posts.request.PostCreateRequest;
@@ -15,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.UUID;
 
 import static io.mhan.springjpatest2.base.init.InitData.USER_ID;
@@ -103,5 +106,19 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
         String url = imageService.upload(file, "p/" + UUID.randomUUID());
 
         return SuccessResponse.ok("게시글 이미지를 생성하였습니다.", url);
+    }
+
+    @PatchMapping("/{postId}/rearrange")
+    public SuccessResponse<Void> rearrangePostSequence(@PathVariable Long postId, @RequestBody RearrangePostSequence request) {
+        postService.rearrangePostSequence(postId, request.getWantedSequence(), USER_ID);
+
+        return SuccessResponse.noContent("게시글 순서가 변경되었습니다.");
+    }
+
+    @GetMapping("/my/sequence")
+    public SuccessResponse<List<Post>> sequencePosts(@RequestParam(required = false) Long parentPostId) {
+        List<Post> posts = postService.findByAuthorIdAndParentPostId(USER_ID, parentPostId);
+
+        return SuccessResponse.ok("나의 하위 게시글 전체 조회를 성공하셨습니다.", posts);
     }
 }
