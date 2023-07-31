@@ -97,7 +97,7 @@ public class ApiV1PostControllerImpl implements ApiV1PostController {
         return SuccessResponse.noContent("자신의 게시글 삭제를 성공하셨습니다.");
     }
 
-    @PostMapping("posts/images")
+    @PostMapping("/images")
     public SuccessResponse<String> createPostImage(@RequestParam("file") MultipartFile file) {
 
         String url = imageService.upload(file, "p/" + UUID.randomUUID());

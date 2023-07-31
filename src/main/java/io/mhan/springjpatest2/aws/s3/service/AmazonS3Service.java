@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AmazonS3Service {
 
-    private final static String IMAGE_FOLDER_NAME = "images/";
+    private final static String IMAGE_FOLDER_NAME = "i/";
 
     private final AmazonS3Properties amazonS3Properties;
 
