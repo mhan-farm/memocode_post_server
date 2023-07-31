@@ -19,11 +19,11 @@ public class InitData {
     @Profile("default")
     public ApplicationRunner defaultInitData(TestService testService) {
         return args -> {
-            List<User> users = testService.createUsers(10);
-            List<Post> posts = testService.createTestPosts(100, 1000, users);
+            List<User> users = testService.createUsers(3);
+            List<Post> posts = testService.createTestPosts(10, 1000, users);
 
-            testService.createTestComments(100, posts, users);
-            testService.createPostLikes(100, posts, users);
+            testService.createTestComments(10, posts, users);
+            testService.createPostLikes(10, posts, users);
 
             testService.createTestSubPosts(posts.get(0), 10, 100);
         };

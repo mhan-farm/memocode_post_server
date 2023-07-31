@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AmazonS3Service {
 
-    private final static String IMAGE_FOLDER_NAME = "i/";
+    private final static String IMAGE_FOLDER_NAME = "images/";
 
     private final AmazonS3Properties amazonS3Properties;
 
@@ -31,7 +31,7 @@ public class AmazonS3Service {
 
         amazonRepository.upload(amazonS3Properties.getBucketName(), objectName, file, mimeType);
 
-        String url = amazonS3Properties.getCdnEndPoint() + objectName;
+        String url = amazonS3Properties.getCdnEndPoint() + "/" + objectName;
 
         return url;
     }

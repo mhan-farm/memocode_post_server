@@ -22,7 +22,7 @@ public class QueryDslConfig {
     public ApplicationRunner printTransactionIsolationLevel() {
         return args -> {
             System.out.println("Current Transaction Isolation Level: " + entityManager
-                    .createNativeQuery("SELECT @@tx_isolation")
+                    .createNativeQuery("SELECT @@transaction_isolation")
                     .getSingleResult());
         };
     }
