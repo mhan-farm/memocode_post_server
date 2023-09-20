@@ -25,13 +25,13 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final AuthorService userService;
-    private final PostQueryService postService;
+    private final PostQueryService postQueryService;
 
     @Transactional
     public Comment createAndSave(String content, UUID postId, UUID authorId) {
 
         Author user = userService.findActiveByIdElseThrow(authorId);
-        Post post = postService.findActiveByIdElseThrow(postId);
+        Post post = postQueryService.findActiveByIdElseThrow(postId);
 
         Comment comment = Comment.create(content, user, post);
 

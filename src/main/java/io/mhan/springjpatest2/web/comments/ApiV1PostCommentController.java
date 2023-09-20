@@ -1,13 +1,12 @@
-package io.mhan.springjpatest2.comments.controller;
+package io.mhan.springjpatest2.web.comments;
 
-import io.mhan.springjpatest2.base.response.SuccessResponse;
 import io.mhan.springjpatest2.comments.dto.CommentDto;
 import io.mhan.springjpatest2.comments.request.CommentCreateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
+import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
@@ -15,8 +14,8 @@ import java.util.UUID;
 public interface ApiV1PostCommentController {
 
     @Operation(summary = "전체 조회")
-    SuccessResponse<Page<CommentDto>> getAllByPostId(UUID postId, Pageable pageable);
+    ResponseEntity<Page<CommentDto>> getAllByPostId(UUID postId, Pageable pageable);
 
     @Operation(summary = "생성")
-    SuccessResponse<CommentDto> createComment(UUID postId, CommentCreateRequest request, OAuth2IntrospectionAuthenticatedPrincipal principal);
+    ResponseEntity<CommentDto> createComment(UUID postId, CommentCreateRequest request);
 }
