@@ -8,7 +8,7 @@ public enum ErrorCode {
     COMMENT_NOT_MODIFY(403, "comment를 수정할 권한이 없습니다."),
     COMMENT_NOT_DELETE(403, "comment를 삭제할 권한이 없습니다."),
 
-    USER_NOT_FOUND(404, "user가 존재하지 않습니다."),
+    AUTHOR_NOT_FOUND(404, "author가 존재하지 않습니다."),
 
     POST_NOT_FOUND(404, "post가 존재하지 않습니다."),
     POST_NOT_MODIFY(403, "post를 수정할 권한이 없습니다."),

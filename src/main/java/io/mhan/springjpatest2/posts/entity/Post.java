@@ -4,24 +4,20 @@ import io.mhan.springjpatest2.comments.entity.Comment;
 import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.tags.entity.PostTag;
 import io.mhan.springjpatest2.tags.entity.Tag;
-import io.mhan.springjpatest2.users.entity.User;
+import io.mhan.springjpatest2.users.entity.Author;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.Where;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.FetchType.LAZY;
-import static jakarta.persistence.GenerationType.IDENTITY;
 import static org.hibernate.annotations.LazyCollectionOption.EXTRA;
 
 @Slf4j
@@ -36,8 +32,12 @@ import static org.hibernate.annotations.LazyCollectionOption.EXTRA;
 public class Post {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID id;
 
     private String title;
 
@@ -45,12 +45,14 @@ public class Post {
     private String content;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "FK_users_posts"))
-    private User author;
+    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "FK_authors_posts"))
+    private Author author;
 
-    private LocalDateTime created;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updated;
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "post", cascade = {PERSIST})
     @Builder.Default
@@ -67,58 +69,43 @@ public class Post {
     @Builder.Default
     private Set<PostTag> tags = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_post_id")
-    private Post parentPost;
-
-    @OneToMany(mappedBy = "parentPost", cascade = PERSIST)
-    @LazyCollection(EXTRA)
-    @OrderBy("sequence asc")
-    @Where(clause = "is_deleted = false")
-    private List<Post> childPosts = new ArrayList<>();
-
-    private long sequence;
-
     private long commentCount;
 
     private long likeCount;
 
     private long views;
 
-    private boolean isDeleted;
+    @Builder.Default
+    private boolean isDeleted = Boolean.FALSE;
 
     private LocalDateTime deletedAt;
 
-    public static Post create(String title, String content, User author) {
-
-        Assert.notNull(title, "title은 null이 될 수 없습니다.");
-        Assert.notNull(content, "content은 null이 될 수 없습니다.");
-        Assert.notNull(author, "author은 null이 될 수 없습니다.");
-
-        Post post = Post.builder()
-                .title(title)
-                .content(content)
-                .author(author)
-                .isDeleted(false)
-                .created(LocalDateTime.now())
-                .updated(LocalDateTime.now())
-                .build();
-
-        return post;
-    }
+    private boolean isPrivate;
 
     public void increaseLike() {
         this.likeCount = comments.size();
     }
 
-    public void updateTitleAndContent(String title, String content) {
-
+    public void updateTitle(String title) {
         Assert.notNull(title, "title은 null이 될 수 없습니다.");
-        Assert.notNull(content, "content은 null이 될 수 없습니다.");
+
+        if (title.isBlank()) {
+            throw new IllegalArgumentException("제목을 입력해주세요");
+        }
 
         this.title = title;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateContent(String content) {
+
+        Assert.notNull(content, "content은 null이 될 수 없습니다.");
+        if (content.isBlank()) {
+            throw new IllegalArgumentException("내용을 입력해주세요");
+        }
+
         this.content = content;
-        this.updated = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void softDelete() {
@@ -126,43 +113,17 @@ public class Post {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void increaseCommentCount() {
-        this.commentCount = comments.size();
-    }
-
-    public void increaseViews() {
-        this.views++;
-    }
-
     public void addTags(Set<Tag> tags) {
         tags.forEach(tag -> {
             PostTag postTag = PostTag.create(this, tag);
             this.tags.add(postTag);
         });
-        this.updated = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void updateTags(Set<Tag> tags) {
         this.tags.clear();
         addTags(tags);
-        this.updated = LocalDateTime.now();
-    }
-
-    public void addChildPosts(Post post) {
-
-        int childPostCount = childPosts.size() + 1;
-
-        post.updateSequence(childPostCount);
-        post.updateParentPost(this);
-
-        this.childPosts.add(post);
-    }
-
-    private void updateParentPost(Post parentPost) {
-        this.parentPost = parentPost;
-    }
-
-    public void updateSequence(long sequence) {
-        this.sequence = sequence;
+        this.updatedAt = LocalDateTime.now();
     }
 }

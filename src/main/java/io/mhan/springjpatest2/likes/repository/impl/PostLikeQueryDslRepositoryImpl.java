@@ -17,6 +17,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.likes.entity.QPostLike.postLike;
@@ -29,12 +30,12 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<PostLike> findByUserId(Long userId, Sort sort, PostKeyword postKeyword) {
+    public List<PostLike> findByUserId(UUID authorId, Sort sort, PostKeyword postKeyword) {
         JPAQuery<PostLike> contentQuery = jpaQueryFactory
                 .select(postLike)
                 .from(postLike)
                 .where(
-                        eqUserId(userId),
+                        eqAuthorId(authorId),
                         containsPostKeyword(postKeyword)
                 )
                 .orderBy(postLikeOrders(sort));
@@ -45,12 +46,12 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
     }
 
     @Override
-    public Page<PostLike> findByUserId(Long userId, PostKeyword postKeyword, Pageable pageable) {
+    public Page<PostLike> findByUserId(UUID authorId, PostKeyword postKeyword, Pageable pageable) {
         JPAQuery<PostLike> contentQuery = jpaQueryFactory
                 .select(postLike)
                 .from(postLike)
                 .where(
-                        eqUserId(userId),
+                        eqAuthorId(authorId),
                         containsPostKeyword(postKeyword)
                 )
                 .orderBy(postLikeOrders(pageable.getSort()))
@@ -63,15 +64,15 @@ public class PostLikeQueryDslRepositoryImpl implements PostLikeQueryDslRepositor
                 .select(postLike.count())
                 .from(postLike)
                 .where(
-                        eqUserId(userId),
+                        eqAuthorId(authorId),
                         containsPostKeyword(postKeyword)
                 );
 
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
-    private BooleanExpression eqUserId(Long userId) {
-        return postLike.user.id.eq(userId);
+    private BooleanExpression eqAuthorId(UUID authorId) {
+        return postLike.author.id.eq(authorId);
     }
 
     private OrderSpecifier<?>[] postLikeOrders(Sort sort) {

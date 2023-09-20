@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeriesCreateRequest {
-    private String name;
+    private String title;
 }

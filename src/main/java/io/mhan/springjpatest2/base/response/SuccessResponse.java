@@ -23,6 +23,7 @@ public class SuccessResponse<T> {
         return new SuccessResponse<>(200, message, data);
     }
 
+
     public static <T> SuccessResponse<T> create(String message, T data) {
         return new SuccessResponse<>(201, message, data);
     }

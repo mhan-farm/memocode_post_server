@@ -3,14 +3,15 @@ package io.mhan.springjpatest2.likes.service;
 import io.mhan.springjpatest2.likes.entity.PostLike;
 import io.mhan.springjpatest2.likes.repository.PostLikeRepository;
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.posts.service.PostService;
-import io.mhan.springjpatest2.users.entity.User;
-import io.mhan.springjpatest2.users.service.UserService;
+import io.mhan.springjpatest2.posts.service.PostQueryService;
+import io.mhan.springjpatest2.users.entity.Author;
+import io.mhan.springjpatest2.users.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,27 +19,27 @@ import java.util.Optional;
 public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
-    private final UserService userService;
-    private final PostService postService;
+    private final AuthorService userService;
+    private final PostQueryService postService;
 
     @Transactional
-    public PostLike createAndSave(Long postId, Long userId) {
+    public PostLike createAndSave(UUID postId, UUID authorId) {
 
-        Optional<PostLike> opPostLike = findByPostIdAndUserId(postId, userId);
+        Optional<PostLike> opPostLike = findByPostIdAndAuthorId(postId, authorId);
 
         if (opPostLike.isPresent()) {
             return opPostLike.get();
         }
 
         Post post = postService.findActiveByIdElseThrow(postId);
-        User user = userService.findActiveByIdElseThrow(userId);
+        Author author = userService.findActiveByIdElseThrow(authorId);
 
-        PostLike postLike = postLikeRepository.save(PostLike.create(post, user));
+        PostLike postLike = postLikeRepository.save(PostLike.create(post, author));
 
         return postLike;
     }
 
-    private Optional<PostLike> findByPostIdAndUserId(Long postId, Long userId) {
-        return postLikeRepository.findByPostIdAndUserId(postId, userId);
+    private Optional<PostLike> findByPostIdAndAuthorId(UUID postId, UUID userId) {
+        return postLikeRepository.findByPostIdAndAuthorId(postId, userId);
     }
 }

@@ -10,9 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static io.mhan.springjpatest2.base.init.InitData.USER_ID;
+import java.util.UUID;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -24,7 +27,7 @@ public class ApiV1PostCommentControllerImpl implements ApiV1PostCommentControlle
 
     @GetMapping
     public SuccessResponse<Page<CommentDto>> getAllByPostId(
-            @PathVariable Long postId,
+            @PathVariable UUID postId,
             @PageableDefault(sort = "created", direction = DESC) Pageable pageable) {
 
         Page<CommentDto> page = commentService.getActiveCommentDtoAllByPostId(postId, pageable);
@@ -34,10 +37,12 @@ public class ApiV1PostCommentControllerImpl implements ApiV1PostCommentControlle
 
     @PostMapping
     public SuccessResponse<CommentDto> createComment(
-            @PathVariable Long postId,
-            @RequestBody CommentCreateRequest request) {
+            @PathVariable UUID postId,
+            @RequestBody CommentCreateRequest request,
+            @AuthenticationPrincipal OAuth2IntrospectionAuthenticatedPrincipal principal
+    ) {
 
-        Comment comment = commentService.createAndSave(request.getContent(), postId, USER_ID);
+        Comment comment = commentService.createAndSave(request.getContent(), postId, UUID.fromString(principal.getName()));
 
         CommentDto commentDto = commentService.getActiveCommentDtoById(comment.getId());
 

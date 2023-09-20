@@ -12,6 +12,5 @@ public class AmazonS3Properties {
     private final String regionName;
     private final String accessKey;
     private final String secretKey;
-    private final String cdnEndPoint;
     private final String bucketName;
 }

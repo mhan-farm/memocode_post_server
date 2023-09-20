@@ -16,11 +16,9 @@ public class AmazonS3Repository {
 
     private final AmazonS3 amazonS3;
 
-    public PutObjectResult upload(String bucketName, String objectName, MultipartFile file, String contentType) {
+    public PutObjectResult upload(String bucketName, String objectName, MultipartFile file, String contentType, ObjectMetadata metadata) {
 
         try {
-
-            ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(contentType);
 

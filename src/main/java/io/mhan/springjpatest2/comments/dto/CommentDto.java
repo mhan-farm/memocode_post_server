@@ -2,7 +2,7 @@ package io.mhan.springjpatest2.comments.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.mhan.springjpatest2.comments.entity.Comment;
-import io.mhan.springjpatest2.users.dto.UserDto;
+import io.mhan.springjpatest2.users.dto.AuthorDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,8 +25,8 @@ public class CommentDto {
     @JsonProperty("content")
     private String content;
 
-    @JsonProperty("user")
-    private UserDto user;
+    @JsonProperty("author")
+    private AuthorDto authorDto;
 
     @JsonProperty("created")
     private LocalDateTime created;
@@ -36,12 +36,12 @@ public class CommentDto {
 
     public static CommentDto fromComment(Comment comment) {
 
-        UserDto userDto = UserDto.fromUser(comment.getUser());
+        AuthorDto authorDto = AuthorDto.fromAuthor(comment.getAuthor());
 
         CommentDto commentDto = CommentDto.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
-                .user(userDto)
+                .authorDto(authorDto)
                 .created(comment.getCreated())
                 .updated(comment.getUpdated())
                 .build();

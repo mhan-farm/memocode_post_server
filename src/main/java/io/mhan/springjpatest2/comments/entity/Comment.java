@@ -1,7 +1,7 @@
 package io.mhan.springjpatest2.comments.entity;
 
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.users.entity.User;
+import io.mhan.springjpatest2.users.entity.Author;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +35,7 @@ public class Comment {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_users_comments"))
-    private User user;
+    private Author author;
 
     private LocalDateTime created;
 
@@ -45,22 +45,20 @@ public class Comment {
 
     private LocalDateTime deleted;
 
-    public static Comment create(String content, User user, Post post) {
+    public static Comment create(String content, Author author, Post post) {
 
         Assert.notNull(content, "content은 null이 될 수 없습니다.");
-        Assert.notNull(user, "user은 null이 될 수 없습니다.");
+        Assert.notNull(author, "author은 null이 될 수 없습니다.");
         Assert.notNull(post, "post는 null이 될 수 없습니다.");
 
         Comment comment = Comment.builder()
                 .content(content)
-                .user(user)
+                .author(author)
                 .post(post)
                 .isDeleted(false)
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
-
-        post.increaseCommentCount();
 
         return comment;
     }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import static io.mhan.springjpatest2.comments.entity.QComment.comment;
@@ -29,7 +30,7 @@ public class CommentQueryDslRepositoryImpl implements CommentQueryDslRepository 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Comment> findActiveAllByPostId(Long postId, Pageable pageable) {
+    public Page<Comment> findActiveAllByPostId(UUID postId, Pageable pageable) {
 
         Predicate[] where = {
                 eqPostId(postId),
@@ -73,7 +74,7 @@ public class CommentQueryDslRepositoryImpl implements CommentQueryDslRepository 
         return comment.isDeleted.eq(isDeleted);
     }
 
-    private static BooleanExpression eqPostId(Long postId) {
+    private static BooleanExpression eqPostId(UUID postId) {
         return comment.post.id.eq(postId);
     }
 

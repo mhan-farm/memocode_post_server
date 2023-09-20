@@ -5,14 +5,16 @@ import io.mhan.springjpatest2.comments.entity.Comment;
 import io.mhan.springjpatest2.comments.exception.CommentException;
 import io.mhan.springjpatest2.comments.repository.CommentRepository;
 import io.mhan.springjpatest2.posts.entity.Post;
-import io.mhan.springjpatest2.posts.service.PostService;
-import io.mhan.springjpatest2.users.entity.User;
-import io.mhan.springjpatest2.users.service.UserService;
+import io.mhan.springjpatest2.posts.service.PostQueryService;
+import io.mhan.springjpatest2.users.entity.Author;
+import io.mhan.springjpatest2.users.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 import static io.mhan.springjpatest2.base.exception.ErrorCode.*;
 
@@ -22,13 +24,13 @@ import static io.mhan.springjpatest2.base.exception.ErrorCode.*;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserService userService;
-    private final PostService postService;
+    private final AuthorService userService;
+    private final PostQueryService postService;
 
     @Transactional
-    public Comment createAndSave(String content, Long postId, Long userId) {
+    public Comment createAndSave(String content, UUID postId, UUID authorId) {
 
-        User user = userService.findActiveByIdElseThrow(userId);
+        Author user = userService.findActiveByIdElseThrow(authorId);
         Post post = postService.findActiveByIdElseThrow(postId);
 
         Comment comment = Comment.create(content, user, post);
@@ -36,7 +38,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public Page<CommentDto> getActiveCommentDtoAllByPostId(Long postId, Pageable pageable) {
+    public Page<CommentDto> getActiveCommentDtoAllByPostId(UUID postId, Pageable pageable) {
 
         Page<Comment> page = commentRepository.findActiveAllByPostId(postId, pageable);
 
@@ -44,11 +46,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateMyComment(String content, Long commentId, Long userId) {
+    public void updateMyComment(String content, Long commentId, UUID authorId) {
 
         Comment comment = findActiveByIdElseThrow(commentId);
 
-        if (!comment.getUser().getId().equals(userId)) {
+        if (!comment.getAuthor().getId().equals(authorId)) {
             throw new CommentException(COMMENT_NOT_MODIFY);
         }
 
@@ -56,11 +58,11 @@ public class CommentService {
     }
 
     @Transactional
-    public void softDeleteMyComment(Long commentId, Long userId) {
+    public void softDeleteMyComment(Long commentId, UUID authorId) {
 
         Comment comment = findActiveByIdElseThrow(commentId);
 
-        if (!comment.getUser().getId().equals(userId)) {
+        if (!comment.getAuthor().getId().equals(authorId)) {
             throw new CommentException(COMMENT_NOT_DELETE);
         }
 

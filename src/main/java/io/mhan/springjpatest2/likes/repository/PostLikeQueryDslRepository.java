@@ -7,8 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PostLikeQueryDslRepository {
-    List<PostLike> findByUserId(Long userId, Sort sort, PostKeyword keyword);
-    Page<PostLike> findByUserId(Long userId, PostKeyword keyword, Pageable pageable);
+    List<PostLike> findByUserId(UUID authorId, Sort sort, PostKeyword keyword);
+    Page<PostLike> findByUserId(UUID authorId, PostKeyword keyword, Pageable pageable);
 }
