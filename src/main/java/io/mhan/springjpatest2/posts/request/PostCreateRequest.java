@@ -1,12 +1,13 @@
 package io.mhan.springjpatest2.posts.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Getter
 @Builder
@@ -23,8 +24,8 @@ public class PostCreateRequest {
     private String content;
 
     // 태그 필수 아님
-    @Pattern(regexp = "^[^,]+(,[^,]+)*$", message = "tags는 쉼표로만 구분되어야 합니다.")
-    private String tags;
+    // TODO 나중에 길이제한을 고려해보아야 함
+    private Set<String> tags;
 
     private Boolean isPrivate = Boolean.FALSE;
 }

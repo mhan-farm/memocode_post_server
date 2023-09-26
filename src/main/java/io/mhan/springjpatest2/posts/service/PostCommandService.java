@@ -88,7 +88,7 @@ public class PostCommandService {
         }
 
         // tag 존재시 수정
-        if (request.getTags() != null && !request.getTags().isBlank()) {
+        if (request.getTags() != null) {
             Set<Tag> tags = tagService.findOrCreateAndSaveTagsByStringNames(request.getTags());
             post.updateTags(tags);
         }

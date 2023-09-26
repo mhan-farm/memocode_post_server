@@ -5,7 +5,6 @@ import io.mhan.springjpatest2.tags.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,26 +24,21 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
-    public Set<Tag> findOrCreateAndSaveTagsByStringNames(String tagNames) {
+    public Set<Tag> findOrCreateAndSaveTagsByStringNames(Set<String> tagNames) {
 
-        Set<String> setTagNames = StringUtils.commaDelimitedListToSet(tagNames)
-                .stream()
-                .map(String::trim)
-                .collect(Collectors.toUnmodifiableSet());
-
-        Set<Tag> existingTags = tagRepository.findAllByNameIn(setTagNames);
+        Set<Tag> existingTags = tagRepository.findAllByNameIn(tagNames);
 
         Set<String> existingTagNames = existingTags.stream()
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
 
-        Set<Tag> newTags = setTagNames.stream()
+        Set<Tag> newTags = tagNames.stream()
                 .filter(tagName -> !existingTagNames.contains(tagName))
                 .map(this::createAndSave)
                 .collect(Collectors.toSet());
 
         existingTags.addAll(newTags);
 
-        return Collections.unmodifiableSet(existingTags);
+        return Collections.unmodifiableSet(newTags);
     }
 }
